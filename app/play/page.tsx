@@ -140,13 +140,13 @@ function PlayContent() {
                 )}
             </AnimatePresence>
 
-            <section className="relative z-10 pt-32 pb-40 px-6 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-[90vh]">
+            <section className="relative z-10 px-6 pt-28 pb-28 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-[90vh] md:pt-32 md:pb-40">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-16"
                 >
-                    <h1 className="text-5xl font-medium tracking-tighter md:text-8xl mb-6">
+                    <h1 className="text-4xl font-medium tracking-tighter md:text-8xl mb-6">
                         Zen Playground
                     </h1>
                     <p className="text-muted-foreground/60 text-lg md:text-xl max-w-2xl mx-auto font-light">
@@ -155,23 +155,23 @@ function PlayContent() {
                 </motion.div>
 
                 {/* Two-Row Staggered Grid Layout (As per user sketch) */}
-                <div className="relative w-full max-w-5xl flex flex-col items-center gap-12 mt-12" key={key}>
+                <div className="relative w-full max-w-5xl flex flex-col items-center gap-10 mt-8 md:mt-12" key={key}>
                     {/* Row 1: 3 Bowls */}
-                    <div className="flex justify-center gap-12 md:gap-24">
+                    <div className="flex w-full max-w-[360px] flex-wrap justify-center gap-6 sm:max-w-[420px] sm:gap-8 md:max-w-none md:gap-24">
                         {BOWLS.slice(0, 3).map((bowl, index) => (
-                            <BowlItem key={bowl.id} bowl={bowl} index={index} onSelect={setActiveBowl} onResonance={setIsResonating} />
+                            <BowlItem key={bowl.id} bowl={bowl} index={index} volume={intensity} onSelect={setActiveBowl} onResonance={setIsResonating} />
                         ))}
                     </div>
 
                     {/* Row 2: 4 Bowls */}
-                    <div className="flex justify-center gap-12 md:gap-20">
+                    <div className="flex w-full max-w-[360px] flex-wrap justify-center gap-6 sm:max-w-[420px] sm:gap-8 md:max-w-none md:gap-20">
                         {BOWLS.slice(3, 7).map((bowl, index) => (
-                            <BowlItem key={bowl.id} bowl={bowl} index={index + 3} onSelect={setActiveBowl} onResonance={setIsResonating} />
+                            <BowlItem key={bowl.id} bowl={bowl} index={index + 3} volume={intensity} onSelect={setActiveBowl} onResonance={setIsResonating} />
                         ))}
                     </div>
 
                     {/* Central Void / Focus Point - Subtle Background Decoration */}
-                    <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none opacity-5">
+                    <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none opacity-5 hidden md:block">
                         <div className="absolute inset-0 border border-white/20 rounded-full" />
                         <div className="absolute inset-20 border border-white/10 rounded-full" />
                         <div className="absolute inset-40 border border-white/5 rounded-full" />
@@ -191,7 +191,7 @@ function PlayContent() {
     );
 }
 
-function BowlItem({ bowl, index, onSelect, onResonance }: { bowl: BowlData, index: number, onSelect: (id: string | null) => void, onResonance: (active: boolean) => void }) {
+function BowlItem({ bowl, index, volume, onSelect, onResonance }: { bowl: BowlData, index: number, volume: number, onSelect: (id: string | null) => void, onResonance: (active: boolean) => void }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -203,6 +203,7 @@ function BowlItem({ bowl, index, onSelect, onResonance }: { bowl: BowlData, inde
                 id={bowl.id}
                 color={bowl.color}
                 frequency={bowl.freqNum}
+                volume={volume}
                 onInteraction={(id: string | null) => onSelect(id)}
                 onResonance={onResonance}
             />
@@ -215,8 +216,4 @@ function BowlItem({ bowl, index, onSelect, onResonance }: { bowl: BowlData, inde
             </div>
         </motion.div>
     );
-}
-
-function numToKey(num: number) {
-    return num.toString();
 }

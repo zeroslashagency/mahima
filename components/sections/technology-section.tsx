@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function ScrollRevealText({ text }: { text: string }) {
   const containerRef = useRef<HTMLParagraphElement>(null);
@@ -89,7 +90,7 @@ export function TechnologySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const textSectionRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [textProgress, setTextProgress] = useState(0);
+  const isMobile = useIsMobile();
 
   const descriptionText = "Stress is the silent productivity killer. Mahima's corporate wellness programs use sound healing and breathwork to reduce burnout, enhance creativity, and restore team synergy. Invest in the wellbeing of your workforce and watch performance soar.";
 
@@ -104,20 +105,6 @@ export function TechnologySection() {
 
       setScrollProgress(progress);
 
-      // Text scroll progress
-      if (textSectionRef.current) {
-        const textRect = textSectionRef.current.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-
-        const startOffset = windowHeight * 0.9;
-        const endOffset = windowHeight * 0.1;
-
-        const totalDistance = startOffset - endOffset;
-        const currentPosition = startOffset - textRect.top;
-
-        const newTextProgress = Math.max(0, Math.min(1, currentPosition / totalDistance));
-        setTextProgress(newTextProgress);
-      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -128,39 +115,33 @@ export function TechnologySection() {
     };
   }, []);
 
-  // Title fades out first (0 to 0.2)
-  const titleOpacity = Math.max(0, 1 - (scrollProgress / 0.2));
-
   // Image transforms start after title fades (0.2 to 1)
   const imageProgress = Math.max(0, Math.min(1, (scrollProgress - 0.2) / 0.8));
 
   // Smooth interpolations
-  const centerWidth = 100 - (imageProgress * 58); // 100% to 42%
-  const centerHeight = 100 - (imageProgress * 30); // 100% to 70%
-  const sideWidth = imageProgress * 22; // 0% to 22%
-  const sideOpacity = imageProgress;
-  const sideTranslateLeft = -100 + (imageProgress * 100); // -100% to 0%
-  const sideTranslateRight = 100 - (imageProgress * 100); // 100% to 0%
-  const borderRadius = imageProgress * 24; // 0px to 24px
-  const gap = imageProgress * 16; // 0px to 16px
-
-  // Calculate grayscale for text section based on textProgress
-  const grayscaleAmount = Math.round((1 - textProgress) * 100);
+  const centerWidth = isMobile ? 100 : 100 - (imageProgress * 58); // 100% to 42%
+  const centerHeight = isMobile ? 100 : 100 - (imageProgress * 30); // 100% to 70%
+  const sideWidth = isMobile ? 0 : imageProgress * 22; // 0% to 22%
+  const sideOpacity = isMobile ? 0 : imageProgress;
+  const sideTranslateLeft = isMobile ? 0 : -100 + (imageProgress * 100); // -100% to 0%
+  const sideTranslateRight = isMobile ? 0 : 100 - (imageProgress * 100); // 100% to 0%
+  const borderRadius = isMobile ? 16 : imageProgress * 24; // 0px to 24px
+  const gap = isMobile ? 8 : imageProgress * 16; // 0px to 16px
 
   return (
-    <section ref={sectionRef} className="relative bg-foreground">
+    <section id="technology" ref={sectionRef} className="relative bg-foreground">
       {/* Sticky container for scroll animation */}
-      <div className="sticky top-0 h-screen overflow-hidden">
+      <div className="overflow-hidden h-[70vh] md:sticky md:top-0 md:h-screen">
         <div className="flex h-full w-full items-center justify-center">
           {/* Bento Grid Container */}
           <div
             className="relative flex h-full w-full items-stretch justify-center"
-            style={{ gap: `${gap}px`, padding: `${imageProgress * 16}px` }}
+            style={{ gap: `${gap}px`, padding: `${isMobile ? 8 : imageProgress * 16}px` }}
           >
 
             {/* Left Column */}
             <div
-              className="flex flex-col will-change-transform"
+              className="hidden flex-col will-change-transform md:flex"
               style={{
                 width: `${sideWidth}%`,
                 gap: `${gap}px`,
@@ -240,7 +221,7 @@ export function TechnologySection() {
 
             {/* Right Column */}
             <div
-              className="flex flex-col will-change-transform"
+              className="hidden flex-col will-change-transform md:flex"
               style={{
                 width: `${sideWidth}%`,
                 gap: `${gap}px`,
@@ -272,7 +253,7 @@ export function TechnologySection() {
       </div>
 
       {/* Scroll space to enable animation */}
-      <div className="h-[200vh]" />
+      <div className="h-[12vh] md:h-[200vh]" />
 
       {/* Description Section with Background Image and Scroll Reveal */}
       <div

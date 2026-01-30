@@ -6,12 +6,13 @@ import { useState, useRef, useEffect } from "react";
 interface InteractiveBowlProps {
     color: string;
     frequency: number;
+    volume: number;
     onInteraction: (id: string | null) => void;
     onResonance?: (active: boolean) => void;
     id: string;
 }
 
-export function InteractiveBowl({ color, frequency, onInteraction, onResonance, id }: InteractiveBowlProps) {
+export function InteractiveBowl({ color, frequency, volume, onInteraction, onResonance, id }: InteractiveBowlProps) {
     const [isSinging, setIsSinging] = useState(false);
     const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
     const resonanceTimer = useRef<NodeJS.Timeout | null>(null);
@@ -40,6 +41,12 @@ export function InteractiveBowl({ color, frequency, onInteraction, onResonance, 
         }
     };
 
+    useEffect(() => {
+        if (!audioContext.current || !gainNode.current) return;
+        const targetGain = isSinging ? 0.2 * volume : 0;
+        gainNode.current.gain.setTargetAtTime(targetGain, audioContext.current.currentTime, 0.08);
+    }, [volume, isSinging]);
+
     const playStrike = () => {
         try {
             initAudio();
@@ -51,7 +58,7 @@ export function InteractiveBowl({ color, frequency, onInteraction, onResonance, 
             osc.type = "sine";
             osc.frequency.setValueAtTime(frequency + (Math.random() * 2 - 1), audioContext.current.currentTime);
 
-            gain.gain.setValueAtTime(0.4, audioContext.current.currentTime);
+            gain.gain.setValueAtTime(0.4 * volume, audioContext.current.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, audioContext.current.currentTime + 4);
 
             osc.connect(gain);
@@ -85,7 +92,7 @@ export function InteractiveBowl({ color, frequency, onInteraction, onResonance, 
             oscillator.current.frequency.setValueAtTime(frequency, audioContext.current.currentTime);
 
             gainNode.current.gain.setValueAtTime(0, audioContext.current.currentTime);
-            gainNode.current.gain.linearRampToValueAtTime(0.2, audioContext.current.currentTime + 1);
+            gainNode.current.gain.linearRampToValueAtTime(0.2 * volume, audioContext.current.currentTime + 1);
 
             oscillator.current.connect(gainNode.current);
             gainNode.current.connect(audioContext.current.destination);
@@ -177,7 +184,7 @@ export function InteractiveBowl({ color, frequency, onInteraction, onResonance, 
                 onTouchStart={startSinging}
                 onTouchEnd={stopSinging}
                 onClick={handleStrike}
-                className="relative w-28 h-28 md:w-36 md:h-36 rounded-full border border-white/40 flex items-center justify-center backdrop-blur-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.2)] transition-shadow duration-500"
+                className="relative h-20 w-20 rounded-full border border-white/40 flex items-center justify-center backdrop-blur-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-shadow duration-500 sm:h-24 sm:w-24 md:h-36 md:w-36 md:group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.2)]"
                 style={{
                     background: `radial-gradient(circle at 30% 30%, white 0%, #f8f9fa 100%)`,
                 }}

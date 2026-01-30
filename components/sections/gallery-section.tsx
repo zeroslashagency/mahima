@@ -9,17 +9,16 @@ export function GallerySection() {
   const [sectionHeight, setSectionHeight] = useState("100vh");
   const [translateX, setTranslateX] = useState(0);
   const rafRef = useRef<number | null>(null);
-  const lastScrollRef = useRef(0);
 
-  const images = [
-    { src: "/placeholder.svg", alt: "Sound Bath Session" },
-    { src: "/placeholder.svg", alt: "Bowl Vibration" },
-    { src: "/placeholder.svg", alt: "Group Meditation" },
-    { src: "/placeholder.svg", alt: "Breathwork Circle" },
-    { src: "/placeholder.svg", alt: "Nature Retreat" },
-    { src: "/placeholder.svg", alt: "Private Healing" },
-    { src: "/placeholder.svg", alt: "Studio Vibe" },
-    { src: "/placeholder.svg", alt: "Closing Circle" },
+  const galleryItems = [
+    { type: "video", src: "/asset/vid-1.mp4", label: "Sound bath in motion" },
+    { type: "image", src: "/asset/card-2.jpeg", alt: "Sound Bath Session" },
+    { type: "video", src: "/asset/vid-2.mp4", label: "Breathwork flow" },
+    { type: "image", src: "/asset/side-1.webp", alt: "Bowl Vibration" },
+    { type: "image", src: "/asset/side-2.webp", alt: "Nature Retreat" },
+    { type: "video", src: "/asset/vid-3.mp4", label: "Meditation space ambience" },
+    { type: "image", src: "/asset/card-3.jpg", alt: "Group Meditation" },
+    { type: "image", src: "/asset/card-4.webp", alt: "Closing Circle" },
   ];
 
   // Calculate section height based on content width
@@ -111,22 +110,37 @@ export function GallerySection() {
               touchAction: 'pan-y',
             }}
           >
-            {images.map((image, index) => (
+            {galleryItems.map((item, index) => (
               <div
                 key={index}
-                className="relative h-[70vh] w-[85vw] flex-shrink-0 overflow-hidden rounded-2xl md:w-[60vw] lg:w-[45vw]"
+                className="relative h-[70vh] w-[85vw] flex-shrink-0 overflow-hidden rounded-2xl md:h-[60vh] md:w-[32vw] lg:w-[26vw] xl:w-[24vw]"
                 style={{
                   transform: 'translateZ(0)',
                   WebkitTransform: 'translateZ(0)',
                 }}
               >
-                <Image
-                  src={image.src || "/placeholder.svg"}
-                  alt={image.alt}
-                  fill
-                  className="object-cover"
-                  priority={index < 3}
-                />
+                {item.type === "video" ? (
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="metadata"
+                    poster="/asset/hero-poster.webp"
+                    aria-label={item.label}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  >
+                    <source src={item.src} type="video/mp4" />
+                  </video>
+                ) : (
+                  <Image
+                    src={item.src || "/placeholder.svg"}
+                    alt={item.alt}
+                    fill
+                    className="object-cover"
+                    priority={index < 3}
+                  />
+                )}
               </div>
             ))}
           </div>

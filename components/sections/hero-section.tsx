@@ -2,30 +2,31 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const word = "MAHIMA";
 
 const sideImages = [
   {
-    src: "/asset/side-1.JPEG",
+    src: "/asset/side-1.webp",
     alt: "Meditation Space",
     position: "left",
     span: 1,
   },
   {
-    src: "/asset/side-2.JPEG",
+    src: "/asset/side-2.webp",
     alt: "Sound Healing Session",
     position: "left",
     span: 1,
   },
   {
-    src: "/asset/side-3.JPEG",
+    src: "/asset/side-3.webp",
     alt: "Peaceful Sanctuary",
     position: "right",
     span: 1,
   },
   {
-    src: "/asset/card-4.JPG",
+    src: "/asset/card-4.webp",
     alt: "Gong Detail",
     position: "right",
     span: 1,
@@ -35,8 +36,13 @@ const sideImages = [
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
+    if (isMobile) {
+      setScrollProgress(0);
+      return;
+    }
     const handleScroll = () => {
       if (!sectionRef.current) return;
 
@@ -54,7 +60,7 @@ export function HeroSection() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [isMobile]);
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -70,42 +76,48 @@ export function HeroSection() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
+  const effectiveScroll = isMobile ? 0 : scrollProgress;
+
   // Text fades out first (0 to 0.2)
-  const textOpacity = Math.max(0, 1 - (scrollProgress / 0.2));
+  const textOpacity = isMobile ? 1 : Math.max(0, 1 - (effectiveScroll / 0.2));
 
   // Image transforms start after text fades (0.2 to 1)
-  const imageProgress = Math.max(0, Math.min(1, (scrollProgress - 0.2) / 0.8));
+  const imageProgress = isMobile ? 0 : Math.max(0, Math.min(1, (effectiveScroll - 0.2) / 0.8));
 
   // Smooth interpolations
-  const centerWidth = 100 - (imageProgress * 58); // 100% to 42%
-  const centerHeight = 100 - (imageProgress * 30); // 100% to 70%
-  const sideWidth = imageProgress * 22; // 0% to 22%
-  const sideOpacity = imageProgress;
-  const sideTranslateLeft = -100 + (imageProgress * 100); // -100% to 0%
-  const sideTranslateRight = 100 - (imageProgress * 100); // 100% to 0%
-  const borderRadius = imageProgress * 24; // 0px to 24px
-  const gap = imageProgress * 16; // 0px to 16px
+  const centerWidth = isMobile ? 100 : 100 - (imageProgress * 58); // 100% to 42%
+  const centerHeight = isMobile ? 100 : 100 - (imageProgress * 30); // 100% to 70%
+  const sideWidth = isMobile ? 0 : imageProgress * 22; // 0% to 22%
+  const sideOpacity = isMobile ? 0 : imageProgress;
+  const sideTranslateLeft = isMobile ? 0 : -100 + (imageProgress * 100); // -100% to 0%
+  const sideTranslateRight = isMobile ? 0 : 100 - (imageProgress * 100); // 100% to 0%
+  const borderRadius = isMobile ? 16 : imageProgress * 24; // 0px to 24px
+  const gap = isMobile ? 8 : imageProgress * 16; // 0px to 16px
 
   // Vertical offset for side columns to move them up on mobile
-  const sideTranslateY = -(imageProgress * 15); // Move up by 15% when fully expanded
+  const sideTranslateY = isMobile ? 0 : -(imageProgress * 15); // Move up by 15% when fully expanded
 
   // Mouse move transform for the video
-  const mouseTransform = `translate3d(${mousePosition.x}px, ${mousePosition.y}px, 0) scale(1.05)`;
+  const mouseTransform = isMobile ? "translate3d(0, 0, 0) scale(1.02)" : `translate3d(${mousePosition.x}px, ${mousePosition.y}px, 0) scale(1.05)`;
 
   return (
     <section ref={sectionRef} className="relative bg-background">
       {/* Sticky container for scroll animation */}
-      <div className="sticky top-0 h-screen overflow-hidden">
+      <div className="overflow-hidden h-[72vh] min-h-[420px] md:sticky md:top-0 md:h-screen">
         <div className="flex h-full w-full items-center justify-center">
           {/* Bento Grid Container */}
           <div
             className="relative flex h-full w-full items-stretch justify-center"
-            style={{ gap: `${gap}px`, padding: `${imageProgress * 16}px`, paddingBottom: `${60 + (imageProgress * 40)}px` }}
+            style={{
+              gap: `${gap}px`,
+              padding: `${isMobile ? 8 : imageProgress * 16}px`,
+              paddingBottom: `${isMobile ? 16 : 60 + (imageProgress * 40)}px`,
+            }}
           >
 
             {/* Left Column */}
             <div
-              className="flex flex-col will-change-transform"
+              className="hidden flex-col will-change-transform md:flex"
               style={{
                 width: `${sideWidth}%`,
                 gap: `${gap}px`,
@@ -126,6 +138,7 @@ export function HeroSection() {
                     src={img.src || "/placeholder.svg"}
                     alt={img.alt}
                     fill
+                    priority
                     className="object-cover"
                   />
                 </div>
@@ -147,10 +160,12 @@ export function HeroSection() {
                 loop
                 muted
                 playsInline
+                poster="/asset/hero-poster.webp"
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out"
                 style={{ transform: mouseTransform }}
               >
-                <source src="/asset/hero-in.mp4" type="video/mp4" />
+                <source src="/asset/hero-opt.webm" type="video/webm" />
+                <source src="/asset/hero-opt.mp4" type="video/mp4" />
               </video>
 
               {/* Overlay Text - Fades out first */}
@@ -158,7 +173,7 @@ export function HeroSection() {
                 className="absolute inset-0 flex items-end overflow-hidden"
                 style={{ opacity: textOpacity }}
               >
-                <h1 className="w-full text-[22vw] font-medium leading-[0.8] tracking-tighter text-white">
+                <h1 className="w-full text-[16vw] font-medium leading-[0.8] tracking-tighter text-white md:text-[22vw]">
                   {word.split("").map((letter, index) => (
                     <span
                       key={index}
@@ -178,7 +193,7 @@ export function HeroSection() {
 
             {/* Right Column */}
             <div
-              className="flex flex-col will-change-transform"
+              className="hidden flex-col will-change-transform md:flex"
               style={{
                 width: `${sideWidth}%`,
                 gap: `${gap}px`,
@@ -199,6 +214,7 @@ export function HeroSection() {
                     src={img.src || "/placeholder.svg"}
                     alt={img.alt}
                     fill
+                    priority
                     className="object-cover"
                   />
                 </div>
@@ -210,14 +226,14 @@ export function HeroSection() {
       </div>
 
       {/* Scroll space to enable animation */}
-      <div className="h-[200vh]" />
+      <div className="h-0 md:h-[200vh]" />
 
       {/* Tagline Section */}
-      <div className="px-6 pt-32 pb-28 md:pt-48 md:px-12 md:pb-36 lg:px-20 lg:pt-56 lg:pb-44">
+      <div className="px-6 pt-4 pb-10 md:pt-48 md:px-12 md:pb-36 lg:px-20 lg:pt-56 lg:pb-44">
         <p className="mx-auto max-w-2xl text-center text-2xl leading-relaxed text-muted-foreground md:text-3xl lg:text-[2.5rem] lg:leading-snug">
           Delhi-NCR's Premium
           <br />
-          Sound Healing & Breathwork Sanctuary.
+          Sound Healing
         </p>
       </div>
     </section>

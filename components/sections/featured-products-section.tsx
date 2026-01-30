@@ -40,7 +40,7 @@ export function FeaturedProductsSection() {
         {features.map((feature) => (
           <div key={feature.title} className="group">
             {/* Image */}
-            <div className="relative h-[631px] -full overflow-hidden" style={{ borderRadius: "25px" }}>
+            <div className="relative h-[420px] w-full overflow-hidden md:h-[631px]" style={{ borderRadius: "25px" }}>
               <FadeImage
                 src={feature.image || "/placeholder.svg"}
                 alt={feature.title}

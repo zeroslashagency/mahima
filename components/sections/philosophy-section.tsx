@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function PhilosophySection() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -9,6 +10,7 @@ export function PhilosophySection() {
   const [forestTranslateX, setForestTranslateX] = useState(100);
   const [titleOpacity, setTitleOpacity] = useState(1);
   const rafRef = useRef<number | null>(null);
+  const isMobile = useIsMobile();
 
   const updateTransforms = useCallback(() => {
     if (!sectionRef.current) return;
@@ -33,6 +35,12 @@ export function PhilosophySection() {
   }, []);
 
   useEffect(() => {
+    if (isMobile) {
+      setAlpineTranslateX(0);
+      setForestTranslateX(0);
+      setTitleOpacity(1);
+      return;
+    }
     const handleScroll = () => {
       // Cancel any pending animation frame
       if (rafRef.current) {
@@ -52,20 +60,20 @@ export function PhilosophySection() {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [updateTransforms]);
+  }, [updateTransforms, isMobile]);
 
   return (
-    <section id="products" className="bg-background">
+    <section id="philosophy" className="bg-background">
       {/* Scroll-Animated Product Grid */}
-      <div ref={sectionRef} className="relative" style={{ height: "200vh" }}>
-        <div className="sticky top-0 h-screen flex items-center justify-center">
+      <div ref={sectionRef} className="relative min-h-[70vh] md:h-[200vh]">
+        <div className="flex min-h-[60vh] items-center justify-center md:sticky md:top-0 md:h-screen">
           <div className="relative w-full">
             {/* Title - positioned behind the blocks */}
             <div
-              className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
-              style={{ opacity: titleOpacity }}
+              className="relative z-0 mb-10 flex items-center justify-center md:absolute md:inset-0 md:mb-0 md:pointer-events-none"
+              style={{ opacity: isMobile ? 1 : titleOpacity }}
             >
-              <h2 className="text-[12vw] font-medium leading-[0.95] tracking-tighter text-foreground md:text-[10vw] lg:text-[8vw] text-center px-6">
+              <h2 className="px-6 text-center text-4xl font-medium leading-[0.95] tracking-tighter text-foreground md:text-[10vw] lg:text-[8vw]">
                 The Science of Sound.
               </h2>
             </div>
@@ -76,8 +84,8 @@ export function PhilosophySection() {
               <div
                 className="relative aspect-[4/3] overflow-hidden rounded-2xl"
                 style={{
-                  transform: `translate3d(${alpineTranslateX}%, 0, 0)`,
-                  WebkitTransform: `translate3d(${alpineTranslateX}%, 0, 0)`,
+                  transform: `translate3d(${isMobile ? 0 : alpineTranslateX}%, 0, 0)`,
+                  WebkitTransform: `translate3d(${isMobile ? 0 : alpineTranslateX}%, 0, 0)`,
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
                 }}
@@ -99,8 +107,8 @@ export function PhilosophySection() {
               <div
                 className="relative aspect-[4/3] overflow-hidden rounded-2xl"
                 style={{
-                  transform: `translate3d(${forestTranslateX}%, 0, 0)`,
-                  WebkitTransform: `translate3d(${forestTranslateX}%, 0, 0)`,
+                  transform: `translate3d(${isMobile ? 0 : forestTranslateX}%, 0, 0)`,
+                  WebkitTransform: `translate3d(${isMobile ? 0 : forestTranslateX}%, 0, 0)`,
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
                 }}

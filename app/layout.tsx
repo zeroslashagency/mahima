@@ -7,8 +7,15 @@ import './globals.css'
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'Heal with Mahima | Sound Healing & Breathwork',
+  metadataBase: new URL('https://healwithmahima.in'),
+  title: {
+    default: 'Heal with Mahima | Sound Healing & Breathwork',
+    template: '%s | Heal with Mahima',
+  },
   description: 'Transformative Sound Healing, Breathwork, and Meditative Journeys in Delhi-NCR. Find your inner sanctuary with Mahima Arora.',
+  alternates: {
+    canonical: '/',
+  },
   generator: 'Heal with Mahima',
   icons: {
     icon: [
@@ -26,6 +33,27 @@ export const metadata: Metadata = {
       },
     ],
     apple: '/apple-icon.png',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://healwithmahima.in',
+    title: 'Heal with Mahima | Sound Healing & Breathwork',
+    description: 'Transformative Sound Healing, Breathwork, and Meditative Journeys in Delhi-NCR.',
+    siteName: 'Heal with Mahima',
+    images: [
+      {
+        url: '/asset/hero-poster.webp',
+        width: 1200,
+        height: 630,
+        alt: 'Heal with Mahima',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Heal with Mahima | Sound Healing & Breathwork',
+    description: 'Transformative Sound Healing, Breathwork, and Meditative Journeys in Delhi-NCR.',
+    images: ['/asset/hero-poster.webp'],
   },
 }
 
