@@ -69,6 +69,13 @@ export function EditorialSection() {
         >
           <source src="/asset/hero-opt.webm" type="video/webm" />
           <source src="/asset/hero-opt.mp4" type="video/mp4" />
+          <track
+            kind="captions"
+            src="/captions/ambient.vtt"
+            srcLang="en"
+            label="English"
+            default
+          />
         </video>
       </div>
     </section>

@@ -6,6 +6,9 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://healwithmahima.in/sitemap.xml',
+    sitemap: [
+      'https://healwithmahima.in/sitemap.xml',
+      'https://healwithmahima.in/video-sitemap.xml',
+    ],
   }
 }

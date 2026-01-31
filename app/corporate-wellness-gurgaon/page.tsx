@@ -1,5 +1,3 @@
-"use client";
-
 import { Header } from "@/components/header";
 import { FooterSection } from "@/components/sections/footer-section";
 import Link from "next/link";

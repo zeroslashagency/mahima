@@ -131,6 +131,13 @@ export function GallerySection() {
                     className="absolute inset-0 h-full w-full object-cover"
                   >
                     <source src={item.src} type="video/mp4" />
+                    <track
+                      kind="captions"
+                      src="/captions/ambient.vtt"
+                      srcLang="en"
+                      label="English"
+                      default
+                    />
                   </video>
                 ) : (
                   <Image
