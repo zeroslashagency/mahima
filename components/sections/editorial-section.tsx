@@ -1,5 +1,7 @@
 "use client";
 
+import { useIsMobile } from "@/hooks/use-mobile";
+
 const specs = [
   { label: "Stress", value: "-40%" },
   { label: "Clarity", value: "Boosted" },
@@ -8,6 +10,8 @@ const specs = [
 ];
 
 export function EditorialSection() {
+  const isMobile = useIsMobile();
+
   return (
     <section className="bg-background">
       {/* Newsletter Banner */}
@@ -60,12 +64,14 @@ export function EditorialSection() {
       {/* Full-width Video */}
       <div className="relative aspect-[16/9] w-full md:aspect-[21/9]">
         <video
-          autoPlay
-          loop
+          autoPlay={!isMobile}
+          loop={!isMobile}
           muted
           playsInline
+          preload={isMobile ? "none" : "metadata"}
           poster="/asset/hero-poster.webp"
           className="absolute inset-0 h-full w-full object-cover"
+          controls={isMobile}
         >
           <source src="/asset/hero-opt.webm" type="video/webm" />
           <source src="/asset/hero-opt.mp4" type="video/mp4" />

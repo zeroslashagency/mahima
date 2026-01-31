@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function GallerySection() {
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -9,6 +10,7 @@ export function GallerySection() {
   const [sectionHeight, setSectionHeight] = useState("100vh");
   const [translateX, setTranslateX] = useState(0);
   const rafRef = useRef<number | null>(null);
+  const isMobile = useIsMobile();
 
   const galleryItems = [
     { type: "video", src: "/asset/vid-1.mp4", label: "Sound bath in motion" },
@@ -121,14 +123,15 @@ export function GallerySection() {
               >
                 {item.type === "video" ? (
                   <video
-                    autoPlay
-                    loop
+                    autoPlay={!isMobile}
+                    loop={!isMobile}
                     muted
                     playsInline
-                    preload="metadata"
+                    preload={isMobile ? "none" : "metadata"}
                     poster="/asset/hero-poster.webp"
                     aria-label={item.label}
                     className="absolute inset-0 h-full w-full object-cover"
+                    controls={isMobile}
                   >
                     <source src={item.src} type="video/mp4" />
                     <track
@@ -145,7 +148,8 @@ export function GallerySection() {
                     alt={item.alt}
                     fill
                     className="object-cover"
-                    priority={index < 3}
+                    priority={!isMobile && index === 0}
+                    sizes="(max-width: 768px) 85vw, (max-width: 1024px) 32vw, 24vw"
                   />
                 )}
               </div>

@@ -65,6 +65,10 @@ export function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
+    if (isMobile) {
+      setMousePosition({ x: 0, y: 0 });
+      return;
+    }
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({
         x: (e.clientX / window.innerWidth - 0.5) * 20,
@@ -74,7 +78,7 @@ export function HeroSection() {
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [isMobile]);
 
   const effectiveScroll = isMobile ? 0 : scrollProgress;
 
@@ -155,25 +159,36 @@ export function HeroSection() {
                 borderRadius: `${borderRadius}px`,
               }}
             >
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                poster="/asset/hero-poster.webp"
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out"
-                style={{ transform: mouseTransform }}
-              >
-                <source src="/asset/hero-opt.webm" type="video/webm" />
-                <source src="/asset/hero-opt.mp4" type="video/mp4" />
-                <track
-                  kind="captions"
-                  src="/captions/ambient.vtt"
-                  srcLang="en"
-                  label="English"
-                  default
+              {isMobile ? (
+                <Image
+                  src="/asset/hero-poster.webp"
+                  alt="Heal with Mahima sanctuary"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
                 />
-              </video>
+              ) : (
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  poster="/asset/hero-poster.webp"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out"
+                  style={{ transform: mouseTransform }}
+                >
+                  <source src="/asset/hero-opt.webm" type="video/webm" />
+                  <source src="/asset/hero-opt.mp4" type="video/mp4" />
+                  <track
+                    kind="captions"
+                    src="/captions/ambient.vtt"
+                    srcLang="en"
+                    label="English"
+                    default
+                  />
+                </video>
+              )}
 
               {/* Overlay Text - Fades out first */}
               <div
