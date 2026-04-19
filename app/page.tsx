@@ -5,7 +5,6 @@ import { FeaturedProductsSection } from "@/components/sections/featured-products
 import { TechnologySection } from "@/components/sections/technology-section";
 import { GallerySection } from "@/components/sections/gallery-section";
 import { CollectionSection } from "@/components/sections/collection-section";
-import { EditorialSection } from "@/components/sections/editorial-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { FooterSection } from "@/components/sections/footer-section";
 
@@ -53,14 +52,13 @@ export default function Home() {
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <Header />
+      <Header variant="pill-light" />
       <HeroSection />
       <PhilosophySection />
       <FeaturedProductsSection />
       <TechnologySection />
       <GallerySection />
       <CollectionSection />
-      <EditorialSection />
       <TestimonialsSection />
       <FooterSection />
     </main>

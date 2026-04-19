@@ -4,9 +4,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
-export function Header() {
+type HeaderProps = {
+  variant?: "default" | "pill-light";
+};
+
+export function Header({ variant = "default" }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const isLightPill = variant === "pill-light";
+  const isElevated = isLightPill || isScrolled;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,14 +25,25 @@ export function Header() {
 
   return (
     <header
-      className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-3xl transition-all duration-300 ${isScrolled ? "bg-background/80 backdrop-blur-md rounded-full" : "bg-transparent"}`}
+      className={`fixed top-4 left-1/2 z-50 w-[90%] -translate-x-1/2 transition-all duration-300 ${
+        isLightPill
+          ? "max-w-[76rem] rounded-full bg-[rgba(255,252,246,0.95)] backdrop-blur-md"
+          : `max-w-3xl ${isScrolled ? "rounded-full bg-background/80 backdrop-blur-md" : "bg-transparent"}`
+      }`}
       style={{
-        boxShadow: isScrolled ? "rgba(14, 63, 126, 0.04) 0px 0px 0px 1px, rgba(42, 51, 69, 0.04) 0px 1px 1px -0.5px, rgba(42, 51, 70, 0.04) 0px 3px 3px -1.5px, rgba(42, 51, 70, 0.04) 0px 6px 6px -3px, rgba(14, 63, 126, 0.04) 0px 12px 12px -6px, rgba(14, 63, 126, 0.04) 0px 24px 24px -12px" : "none"
+        boxShadow: isElevated
+          ? "rgba(14, 63, 126, 0.04) 0px 0px 0px 1px, rgba(42, 51, 69, 0.04) 0px 1px 1px -0.5px, rgba(42, 51, 70, 0.04) 0px 3px 3px -1.5px, rgba(42, 51, 70, 0.04) 0px 6px 6px -3px, rgba(14, 63, 126, 0.04) 0px 12px 12px -6px, rgba(14, 63, 126, 0.04) 0px 24px 24px -12px"
+          : "none",
       }}
     >
       <div className="flex items-center justify-between transition-all duration-300 px-2 pl-5 py-2">
         {/* Logo */}
-        <Link href="/" className={`text-lg font-medium tracking-tight transition-colors duration-300 ${isScrolled ? "text-foreground" : "text-white"}`}>
+        <Link
+          href="/"
+          className={`text-lg font-medium tracking-tight transition-colors duration-300 ${
+            isElevated ? "text-foreground" : "text-white"
+          }`}
+        >
           MAHIMA
         </Link>
 
@@ -34,31 +51,41 @@ export function Header() {
         <nav className="hidden items-center gap-10 md:flex">
           <Link
             href="#products"
-            className={`text-sm transition-colors ${isScrolled ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"}`}
+            className={`text-sm transition-colors ${
+              isElevated ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"
+            }`}
           >
             Offerings
           </Link>
           <Link
             href="#technology"
-            className={`text-sm transition-colors ${isScrolled ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"}`}
+            className={`text-sm transition-colors ${
+              isElevated ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"
+            }`}
           >
             Corporate
           </Link>
           <Link
             href="#gallery"
-            className={`text-sm transition-colors ${isScrolled ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"}`}
+            className={`text-sm transition-colors ${
+              isElevated ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"
+            }`}
           >
             Journal
           </Link>
           <Link
             href="#accessories"
-            className={`text-sm transition-colors ${isScrolled ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"}`}
+            className={`text-sm transition-colors ${
+              isElevated ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"
+            }`}
           >
             Shop
           </Link>
           <Link
             href="/play"
-            className={`text-sm font-medium transition-colors ${isScrolled ? "text-foreground hover:opacity-80" : "text-white hover:text-white/80"}`}
+            className={`text-sm font-medium transition-colors ${
+              isElevated ? "text-foreground hover:opacity-80" : "text-white hover:text-white/80"
+            }`}
           >
             Play
           </Link>
@@ -68,7 +95,13 @@ export function Header() {
         <div className="hidden items-center gap-6 md:flex">
           <Link
             href="#reserve"
-            className={`px-4 py-2 text-sm font-medium transition-all rounded-full ${isScrolled ? "bg-foreground text-background hover:opacity-80" : "bg-white text-foreground hover:bg-white/90"}`}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
+              isLightPill
+                ? "bg-[#0f0e0c] text-[#fff9ef] hover:bg-[#1a1814]"
+                : isScrolled
+                  ? "bg-foreground text-background hover:opacity-80"
+                  : "bg-white text-foreground hover:bg-white/90"
+            }`}
           >
             Book a Session
           </Link>
@@ -78,7 +111,7 @@ export function Header() {
         <button
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={`transition-colors md:hidden ${isScrolled ? "text-foreground" : "text-white"}`}
+          className={`transition-colors md:hidden ${isElevated ? "text-foreground" : "text-white"}`}
           aria-label="Toggle menu"
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
