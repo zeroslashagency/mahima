@@ -139,7 +139,6 @@ export function GallerySection() {
                       src="/captions/ambient.vtt"
                       srcLang="en"
                       label="English"
-                      default
                     />
                   </video>
                 ) : (
