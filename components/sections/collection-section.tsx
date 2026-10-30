@@ -1,5 +1,3 @@
-"use client";
-
 import { FadeImage } from "@/components/fade-image";
 
 const accessories = [
@@ -59,16 +57,16 @@ export function CollectionSection() {
 
       {/* Accessories Grid/Carousel */}
       <div className="pb-24">
-        {/* Mobile: Horizontal Carousel */}
-        <div className="flex gap-6 overflow-x-auto px-6 pb-4 md:hidden snap-x snap-mandatory scrollbar-hide">
+        <div className="flex gap-6 overflow-x-auto px-6 pb-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-3 md:gap-8 md:overflow-visible md:px-12 md:pb-0 md:snap-none lg:px-20">
           {accessories.map((accessory) => (
-            <div key={accessory.id} className="group flex-shrink-0 w-[75vw] snap-center">
+            <div key={accessory.id} className="group flex-shrink-0 w-[75vw] snap-center md:w-auto">
               {/* Image */}
               <div className="relative aspect-[2/3] overflow-hidden rounded-2xl bg-secondary">
                 <FadeImage
                   src={accessory.image || "/placeholder.svg"}
                   alt={accessory.name}
                   fill
+                  sizes="(max-width: 768px) 75vw, 33vw"
                   className="object-cover group-hover:scale-105"
                 />
               </div>
@@ -84,41 +82,7 @@ export function CollectionSection() {
                       {accessory.description}
                     </p>
                   </div>
-                  <span className="text-lg font-medium text-foreground">
-                    {accessory.price}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Desktop: Grid */}
-        <div className="hidden md:grid md:grid-cols-3 gap-8 md:px-12 lg:px-20">
-          {accessories.map((accessory) => (
-            <div key={accessory.id} className="group">
-              {/* Image */}
-              <div className="relative aspect-[2/3] overflow-hidden rounded-2xl bg-secondary">
-                <FadeImage
-                  src={accessory.image || "/placeholder.svg"}
-                  alt={accessory.name}
-                  fill
-                  className="object-cover group-hover:scale-105"
-                />
-              </div>
-
-              {/* Content */}
-              <div className="py-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-medium leading-snug text-foreground">
-                      {accessory.name}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {accessory.description}
-                    </p>
-                  </div>
-                  <span className="font-medium text-foreground text-2xl">
+                  <span className="text-lg font-medium text-foreground md:text-2xl">
                     {accessory.price}
                   </span>
                 </div>

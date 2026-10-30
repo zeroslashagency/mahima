@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 
 export function TestimonialsSection() {
@@ -19,6 +17,7 @@ export function TestimonialsSection() {
           src="/asset/card.jpg"
           alt="Peaceful Sanctuary"
           fill
+          sizes="100vw"
           className="object-cover"
         />
         {/* Fade gradient overlay - white at bottom fading to transparent at top */}

@@ -13,10 +13,11 @@ export function FadeImage({ className, fadeDelay = 0, ...props }: FadeImageProps
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
+          timeout = setTimeout(() => {
             setIsVisible(true);
           }, fadeDelay);
           observer.disconnect();
@@ -32,15 +33,20 @@ export function FadeImage({ className, fadeDelay = 0, ...props }: FadeImageProps
       observer.observe(ref.current);
     }
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (timeout) clearTimeout(timeout);
+    };
   }, [fadeDelay]);
 
   return (
     <div ref={ref} className="relative h-full w-full">
       <Image
         {...props}
-        className={`${className || ""} transition-all duration-700 ease-out ${
-          isVisible && isLoaded ? "opacity-100 scale-100" : "opacity-0 scale-[1.02]"
+        className={`${className || ""} transition-all duration-700 ease-out motion-reduce:transition-none ${
+          isVisible && isLoaded
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-[1.02] motion-reduce:opacity-100 motion-reduce:scale-100"
         }`}
         onLoad={() => setIsLoaded(true)}
       />

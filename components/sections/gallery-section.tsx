@@ -1,99 +1,108 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, useCallback } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect, useLayoutEffect, useRef } from "react";
+
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+const galleryItems = [
+  { type: "video", src: "/asset/opt/vid-1.mp4", poster: "/asset/opt/vid-1-poster.webp", label: "Sound bath in motion" },
+  { type: "image", src: "/asset/card-2.webp", alt: "Sound Bath Session" },
+  { type: "video", src: "/asset/opt/vid-2.mp4", poster: "/asset/opt/vid-2-poster.webp", label: "Breathwork flow" },
+  { type: "image", src: "/asset/side-1.webp", alt: "Bowl Vibration" },
+  { type: "image", src: "/asset/side-2.webp", alt: "Nature Retreat" },
+  { type: "video", src: "/asset/opt/vid-3.mp4", poster: "/asset/opt/vid-3-poster.webp", label: "Meditation space ambience" },
+  { type: "image", src: "/asset/card-3-upright.webp", alt: "Group Meditation" },
+  { type: "image", src: "/asset/card-4.webp", alt: "Closing Circle" },
+];
 
 export function GallerySection() {
-  const galleryRef = useRef<HTMLDivElement>(null);
+  const galleryRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [sectionHeight, setSectionHeight] = useState("100vh");
-  const [translateX, setTranslateX] = useState(0);
-  const rafRef = useRef<number | null>(null);
-  const isMobile = useIsMobile();
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  const galleryItems = [
-    { type: "video", src: "/asset/vid-1.mp4", label: "Sound bath in motion" },
-    { type: "image", src: "/asset/card-2.jpeg", alt: "Sound Bath Session" },
-    { type: "video", src: "/asset/vid-2.mp4", label: "Breathwork flow" },
-    { type: "image", src: "/asset/side-1.webp", alt: "Bowl Vibration" },
-    { type: "image", src: "/asset/side-2.webp", alt: "Nature Retreat" },
-    { type: "video", src: "/asset/vid-3.mp4", label: "Meditation space ambience" },
-    { type: "image", src: "/asset/card-3.jpg", alt: "Group Meditation" },
-    { type: "image", src: "/asset/card-4.webp", alt: "Closing Circle" },
-  ];
+  useIsomorphicLayoutEffect(() => {
+    const section = galleryRef.current;
+    const container = containerRef.current;
+    if (!section || !container) return;
 
-  // Calculate section height based on content width
-  useEffect(() => {
-    const calculateHeight = () => {
-      if (!containerRef.current) return;
-      const containerWidth = containerRef.current.scrollWidth;
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      // Height = viewport height + the extra scroll needed to reveal all content
-      const totalHeight = viewportHeight + (containerWidth - viewportWidth);
-      setSectionHeight(`${totalHeight}px`);
+    let frame: number | null = null;
+
+    const update = () => {
+      const rect = section.getBoundingClientRect();
+      const totalScrollDistance = Math.max(0, container.scrollWidth - window.innerWidth);
+      const scrolled = Math.max(0, -rect.top);
+      const progress = totalScrollDistance > 0 ? Math.min(1, scrolled / totalScrollDistance) : 0;
+      container.style.transform = `translate3d(${progress * -totalScrollDistance}px, 0, 0)`;
     };
 
-    // Small delay to ensure container is rendered
-    const timer = setTimeout(calculateHeight, 100);
-    window.addEventListener("resize", calculateHeight);
+    const measure = () => {
+      const extra = Math.max(0, container.scrollWidth - window.innerWidth);
+      section.style.height = `${window.innerHeight + extra}px`;
+      update();
+    };
+
+    const schedule = (fn: () => void) => () => {
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        fn();
+      });
+    };
+
+    const onScroll = schedule(update);
+    const onResize = schedule(measure);
+
+    measure();
+
+    const resizeObserver = new ResizeObserver(onResize);
+    resizeObserver.observe(container);
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener("resize", calculateHeight);
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onScroll);
+      if (frame !== null) cancelAnimationFrame(frame);
     };
   }, []);
 
-  const updateTransform = useCallback(() => {
-    if (!galleryRef.current || !containerRef.current) return;
-
-    const rect = galleryRef.current.getBoundingClientRect();
-    const containerWidth = containerRef.current.scrollWidth;
-    const viewportWidth = window.innerWidth;
-
-    // Total scroll distance needed to reveal all images
-    const totalScrollDistance = containerWidth - viewportWidth;
-
-    // Current scroll position within this section
-    const scrolled = Math.max(0, -rect.top);
-
-    // Progress from 0 to 1
-    const progress = Math.min(1, scrolled / totalScrollDistance);
-
-    // Calculate new translateX
-    const newTranslateX = progress * -totalScrollDistance;
-
-    setTranslateX(newTranslateX);
-  }, []);
-
   useEffect(() => {
-    const handleScroll = () => {
-      // Cancel any pending animation frame
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+    if (reducedMotion || saveData) return;
 
-      // Use requestAnimationFrame for smooth updates
-      rafRef.current = requestAnimationFrame(updateTransform);
-    };
+    const videos = videoRefs.current.filter((video): video is HTMLVideoElement => video !== null);
+    if (videos.length === 0) return;
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    updateTransform();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { rootMargin: "200px" }
+    );
+
+    videos.forEach((video) => observer.observe(video));
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+      observer.disconnect();
+      videos.forEach((video) => video.pause());
     };
-  }, [updateTransform]);
+  }, []);
 
   return (
     <section
       id="gallery"
       ref={galleryRef}
-      className="relative bg-background"
-      style={{ height: sectionHeight }}
+      className="relative h-[calc(100vh_+_580vw_+_216px)] bg-background md:h-[calc(100vh_+_156vw_+_216px)] lg:h-[calc(100vh_+_108vw_+_216px)] xl:h-[calc(100vh_+_92vw_+_216px)]"
     >
       {/* Sticky container */}
       <div className="sticky top-0 h-screen overflow-hidden">
@@ -101,37 +110,29 @@ export function GallerySection() {
           {/* Horizontal scrolling container */}
           <div
             ref={containerRef}
-            className="flex gap-6 px-6"
+            className="flex gap-6 px-6 will-change-transform"
             style={{
-              transform: `translate3d(${translateX}px, 0, 0)`,
-              WebkitTransform: `translate3d(${translateX}px, 0, 0)`,
-              backfaceVisibility: 'hidden',
-              WebkitBackfaceVisibility: 'hidden',
-              perspective: 1000,
-              WebkitPerspective: 1000,
-              touchAction: 'pan-y',
+              transform: "translate3d(0px, 0, 0)",
+              touchAction: "pan-y",
             }}
           >
             {galleryItems.map((item, index) => (
               <div
                 key={index}
                 className="relative h-[70vh] w-[85vw] flex-shrink-0 overflow-hidden rounded-2xl md:h-[60vh] md:w-[32vw] lg:w-[26vw] xl:w-[24vw]"
-                style={{
-                  transform: 'translateZ(0)',
-                  WebkitTransform: 'translateZ(0)',
-                }}
               >
                 {item.type === "video" ? (
                   <video
-                    autoPlay={!isMobile}
-                    loop={!isMobile}
+                    ref={(el) => {
+                      videoRefs.current[index] = el;
+                    }}
+                    loop
                     muted
                     playsInline
-                    preload={isMobile ? "none" : "metadata"}
-                    poster="/asset/hero-poster.webp"
+                    preload="none"
+                    poster={item.poster}
                     aria-label={item.label}
                     className="absolute inset-0 h-full w-full object-cover"
-                    controls={isMobile}
                   >
                     <source src={item.src} type="video/mp4" />
                     <track
@@ -144,10 +145,9 @@ export function GallerySection() {
                 ) : (
                   <Image
                     src={item.src || "/placeholder.svg"}
-                    alt={item.alt}
+                    alt={item.alt ?? ""}
                     fill
                     className="object-cover"
-                    priority={!isMobile && index === 0}
                     sizes="(max-width: 768px) 85vw, (max-width: 1024px) 32vw, 24vw"
                   />
                 )}

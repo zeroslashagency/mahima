@@ -14,7 +14,7 @@ export const metadata = {
 export default function CorporateWellnessPage() {
   return (
     <main className="min-h-screen bg-background">
-      <Header />
+      <Header variant="pill-light" />
       <section className="px-6 pt-32 pb-20 md:px-12 lg:px-20">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
@@ -31,13 +31,13 @@ export default function CorporateWellnessPage() {
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              href="/contact"
+              href="/#products"
               className="rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-opacity hover:opacity-80"
             >
               Request a Corporate Proposal
             </Link>
             <Link
-              href="/services"
+              href="/#products"
               className="rounded-full border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
             >
               View Corporate Programs

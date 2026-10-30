@@ -2,7 +2,7 @@
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 interface Props {
     children: ReactNode;
@@ -29,7 +29,7 @@ export class ZenErrorBoundary extends Component<Props, State> {
         if (this.state.hasError) {
             return (
                 <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
-                    <motion.div
+                    <m.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="max-w-md"
@@ -45,7 +45,7 @@ export class ZenErrorBoundary extends Component<Props, State> {
                         >
                             Return to Sanctuary
                         </Link>
-                    </motion.div>
+                    </m.div>
                 </div>
             );
         }

@@ -6,10 +6,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()
   const routes = [
     '',
-    '/about',
-    '/contact',
-    '/services',
-    '/shop',
     '/play',
     '/sound-healing-delhi-ncr',
     '/breathwork-delhi-ncr',

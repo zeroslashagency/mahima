@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Sliders, RotateCcw, PlayCircle } from "lucide-react";
 
 interface ControlPanelProps {
@@ -12,7 +12,7 @@ interface ControlPanelProps {
 
 export function ControlPanel({ onReset, volume, onVolumeChange, onPreset }: ControlPanelProps) {
     return (
-        <motion.div
+        <m.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="fixed bottom-6 right-4 z-50 bg-background/70 backdrop-blur-xl border border-white/10 p-4 rounded-3xl shadow-2xl flex flex-col items-center gap-6 md:right-6 md:top-1/2 md:-translate-y-1/2 md:bottom-auto md:p-6 md:gap-8"
@@ -73,6 +73,6 @@ export function ControlPanel({ onReset, volume, onVolumeChange, onPreset }: Cont
             >
                 <PlayCircle size={22} />
             </button>
-        </motion.div>
+        </m.div>
     );
 }

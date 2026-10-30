@@ -75,7 +75,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Inter', 'Inter Fallback', system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', monospace;
   --font-display: 'PP Editorial New', 'Times New Roman', serif;
   --color-background: var(--background);
@@ -328,4 +329,63 @@
 
 .animate-fade-in {
   animation: fadeIn 0.7s ease-out forwards;
+}
+/* Intro section: plus grid (opacity driven by PlusField), text rise, rotating word */
+.intro-plus {
+  color: currentColor;
+  background:
+    linear-gradient(currentColor, currentColor) center / 100% 26% no-repeat,
+    linear-gradient(currentColor, currentColor) center / 26% 100% no-repeat;
+  opacity: 0.1;
+}
+
+.intro-rise {
+  animation: intro-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes intro-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rotating-word {
+  animation: rotating-word 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes rotating-word {
+  from { opacity: 0; transform: translateY(70%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-plus { opacity: 0.35; }
+  .intro-rise, .rotating-word { animation: none; }
+}
+
+.logo-motion { --logo-ink: #2f2f2f; --logo-sage: #7f8a7e; }
+.dark .logo-motion { --logo-ink: #ededed; }
+.logo-motion-body, .logo-motion-head { fill: var(--logo-ink); }
+.logo-motion-line { stroke: var(--logo-sage); stroke-dasharray: 1; stroke-dashoffset: 1; }
+.logo-motion-word { color: var(--logo-sage); }
+.logo-motion-body, .logo-motion-head, .logo-motion-word { opacity: 0; }
+.logo-motion-body, .logo-motion-head { transform-box: fill-box; transform-origin: center; }
+
+.logo-motion[data-play] .logo-motion-line { animation: logo-draw 2.4s cubic-bezier(0.6, 0, 0.3, 1) 0.2s forwards; }
+.logo-motion[data-play] .logo-motion-body { animation: logo-fadeup 1s ease 1.6s forwards; }
+.logo-motion[data-play] .logo-motion-head { animation: logo-pop 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) 2.3s forwards; }
+.logo-motion[data-play] .logo-motion-word { animation: logo-fadeup 1s ease 2.9s forwards; }
+
+@keyframes logo-draw { to { stroke-dashoffset: 0; } }
+@keyframes logo-fadeup {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes logo-pop {
+  from { opacity: 0; transform: scale(0.2); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-motion .logo-motion-line { stroke-dashoffset: 0; animation: none; }
+  .logo-motion .logo-motion-body, .logo-motion .logo-motion-head, .logo-motion .logo-motion-word { opacity: 1; animation: none; }
 }

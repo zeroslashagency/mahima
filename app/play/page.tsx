@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { FooterSection } from "@/components/sections/footer-section";
-import { InteractiveBowl } from "@/components/game/interactive-bowl";
+import { InteractiveBowl, getAudioContext, type InteractiveBowlHandle } from "@/components/game/interactive-bowl";
 import { ControlPanel } from "@/components/game/control-panel";
 import { ZenErrorBoundary } from "@/components/game/zen-error-boundary";
-import { motion, AnimatePresence } from "framer-motion";
+import { LazyMotion, domAnimation, m, AnimatePresence, useReducedMotion } from "framer-motion";
 
 interface BowlData {
     id: string;
@@ -30,9 +30,11 @@ const BOWLS = [
 
 export default function PlayPage() {
     return (
-        <ZenErrorBoundary>
-            <PlayContent />
-        </ZenErrorBoundary>
+        <LazyMotion features={domAnimation}>
+            <ZenErrorBoundary>
+                <PlayContent />
+            </ZenErrorBoundary>
+        </LazyMotion>
     );
 }
 
@@ -41,19 +43,21 @@ function PlayContent() {
     const [isResonating, setIsResonating] = useState(false);
     const [intensity, setIntensity] = useState(0.5);
     const [key, setKey] = useState(0); // For total reset
+    const bowlRefs = useRef<(InteractiveBowlHandle | null)[]>([]);
+    const reduceMotion = useReducedMotion();
 
     const activeColor = BOWLS.find(b => b.id === activeBowl)?.color || "#000000";
 
     // Keyboard Support
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+            const target = e.target as HTMLElement | null;
+            if (target && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))) return;
             const num = parseInt(e.key);
             if (num >= 1 && num <= 7) {
-                const bowl = BOWLS[num - 1];
-                if (bowl) {
-                    // Trigger strike visual/audio through ref would be better, but for now we'll just track active
-                    setActiveBowl(bowl.id);
-                }
+                getAudioContext();
+                bowlRefs.current[num - 1]?.strike();
             }
             if (e.key === "r") handleReset();
         };
@@ -63,6 +67,7 @@ function PlayContent() {
 
     const handleReset = () => {
         setActiveBowl(null);
+        setIsResonating(false);
         setKey(prev => prev + 1); // Remount bowls to kill sounds
     };
 
@@ -74,10 +79,10 @@ function PlayContent() {
 
     return (
         <main className="min-h-screen bg-background text-foreground overflow-hidden">
-            <Header />
+            <Header variant="pill-light" />
 
             {/* Back Link */}
-            <motion.div
+            <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="fixed top-28 left-6 z-50 md:left-20"
@@ -85,63 +90,65 @@ function PlayContent() {
                 <Link href="/" className="text-sm font-medium opacity-50 hover:opacity-100 transition-opacity flex items-center gap-2">
                     ← Return to Sanctuary
                 </Link>
-            </motion.div>
+            </m.div>
 
             {/* Background Aura */}
-            <motion.div
-                className="fixed inset-0 pointer-events-none z-0"
-                animate={{
-                    background: activeBowl
-                        ? `radial-gradient(circle at center, ${activeColor}22 0%, transparent 70%)`
-                        : "radial-gradient(circle at center, transparent 0%, transparent 70%)"
-                }}
-                transition={{ duration: 2 }}
-            />
+            <AnimatePresence initial={false}>
+                {activeBowl && (
+                    <m.div
+                        key={activeBowl}
+                        className="fixed inset-0 pointer-events-none z-0"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: reduceMotion ? 0 : 2 }}
+                        style={{ background: `radial-gradient(circle at center, ${activeColor}22 0%, transparent 70%)` }}
+                    />
+                )}
+            </AnimatePresence>
 
             {/* Full Page Resonance Wave Overlay */}
             <AnimatePresence>
                 {isResonating && (
-                    <motion.div
+                    <m.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 pointer-events-none z-40 overflow-hidden"
                     >
-                        <motion.div
-                            animate={{
-                                scale: [1, 2, 1],
-                                opacity: [0.1, 0.3, 0.1]
-                            }}
-                            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute inset-[-50%] rounded-full blur-[120px]"
-                            style={{ backgroundColor: activeColor }}
+                        <m.div
+                            initial={{ scale: 1, opacity: 0.2 }}
+                            animate={reduceMotion ? { scale: 1, opacity: 0.2 } : { scale: [1, 2, 1], opacity: [0.1, 0.3, 0.1] }}
+                            transition={reduceMotion ? { duration: 0 } : { duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                            className="absolute inset-[-50%] rounded-full will-change-transform"
+                            style={{ background: `radial-gradient(circle at center, ${activeColor} 0%, ${activeColor}99 25%, transparent 60%)` }}
                         />
 
-                        {/* Large SVG Wave Effect */}
-                        <svg className="absolute inset-0 w-full h-full opacity-10">
-                            <motion.circle
-                                cx="50%" cy="50%" r="0"
-                                fill="none"
-                                stroke={activeColor}
-                                strokeWidth="2"
-                                animate={{ r: ["0%", "150%"], opacity: [1, 0] }}
-                                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                            />
-                            <motion.circle
-                                cx="50%" cy="50%" r="0"
-                                fill="none"
-                                stroke={activeColor}
-                                strokeWidth="1"
-                                animate={{ r: ["0%", "150%"], opacity: [0.8, 0] }}
-                                transition={{ duration: 10, delay: 5, repeat: Infinity, ease: "linear" }}
-                            />
-                        </svg>
-                    </motion.div>
+                        {/* Large Wave Effect */}
+                        {!reduceMotion && (
+                            <div className="absolute inset-0 opacity-10">
+                                <m.div
+                                    initial={{ scale: 0, opacity: 1 }}
+                                    animate={{ scale: [0, 1], opacity: [1, 0] }}
+                                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                                    className="absolute top-1/2 left-1/2 -ml-[150vmax] -mt-[150vmax] h-[300vmax] w-[300vmax] rounded-full border-2"
+                                    style={{ borderColor: activeColor }}
+                                />
+                                <m.div
+                                    initial={{ scale: 0, opacity: 0.8 }}
+                                    animate={{ scale: [0, 1], opacity: [0.8, 0] }}
+                                    transition={{ duration: 10, delay: 5, repeat: Infinity, ease: "linear" }}
+                                    className="absolute top-1/2 left-1/2 -ml-[150vmax] -mt-[150vmax] h-[300vmax] w-[300vmax] rounded-full border"
+                                    style={{ borderColor: activeColor }}
+                                />
+                            </div>
+                        )}
+                    </m.div>
                 )}
             </AnimatePresence>
 
             <section className="relative z-10 px-6 pt-28 pb-28 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-[90vh] md:pt-32 md:pb-40">
-                <motion.div
+                <m.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-16"
@@ -152,21 +159,21 @@ function PlayContent() {
                     <p className="text-muted-foreground/60 text-lg md:text-xl max-w-2xl mx-auto font-light">
                         An immersive sound sanctuary. Use keys <span className="text-foreground font-medium">1-7</span> to strike bowls, or click and hold to hear them sing.
                     </p>
-                </motion.div>
+                </m.div>
 
                 {/* Two-Row Staggered Grid Layout (As per user sketch) */}
                 <div className="relative w-full max-w-5xl flex flex-col items-center gap-10 mt-8 md:mt-12" key={key}>
                     {/* Row 1: 3 Bowls */}
                     <div className="flex w-full max-w-[360px] flex-wrap justify-center gap-6 sm:max-w-[420px] sm:gap-8 md:max-w-none md:gap-24">
                         {BOWLS.slice(0, 3).map((bowl, index) => (
-                            <BowlItem key={bowl.id} bowl={bowl} index={index} volume={intensity} onSelect={setActiveBowl} onResonance={setIsResonating} />
+                            <BowlItem key={bowl.id} bowl={bowl} index={index} volume={intensity} onSelect={setActiveBowl} onResonance={setIsResonating} bowlRef={(handle) => { bowlRefs.current[index] = handle; }} />
                         ))}
                     </div>
 
                     {/* Row 2: 4 Bowls */}
                     <div className="flex w-full max-w-[360px] flex-wrap justify-center gap-6 sm:max-w-[420px] sm:gap-8 md:max-w-none md:gap-20">
                         {BOWLS.slice(3, 7).map((bowl, index) => (
-                            <BowlItem key={bowl.id} bowl={bowl} index={index + 3} volume={intensity} onSelect={setActiveBowl} onResonance={setIsResonating} />
+                            <BowlItem key={bowl.id} bowl={bowl} index={index + 3} volume={intensity} onSelect={setActiveBowl} onResonance={setIsResonating} bowlRef={(handle) => { bowlRefs.current[index + 3] = handle; }} />
                         ))}
                     </div>
 
@@ -191,9 +198,9 @@ function PlayContent() {
     );
 }
 
-function BowlItem({ bowl, index, volume, onSelect, onResonance }: { bowl: BowlData, index: number, volume: number, onSelect: (id: string | null) => void, onResonance: (active: boolean) => void }) {
+function BowlItem({ bowl, index, volume, onSelect, onResonance, bowlRef }: { bowl: BowlData, index: number, volume: number, onSelect: (id: string | null) => void, onResonance: (active: boolean) => void, bowlRef: (handle: InteractiveBowlHandle | null) => void }) {
     return (
-        <motion.div
+        <m.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.6 }}
@@ -206,6 +213,7 @@ function BowlItem({ bowl, index, volume, onSelect, onResonance }: { bowl: BowlDa
                 volume={volume}
                 onInteraction={(id: string | null) => onSelect(id)}
                 onResonance={onResonance}
+                ref={bowlRef}
             />
 
             <div className="mt-4 text-center opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none translate-y-2 group-hover:translate-y-0">
@@ -214,6 +222,6 @@ function BowlItem({ bowl, index, volume, onSelect, onResonance }: { bowl: BowlDa
                 </p>
                 <p className="text-sm font-medium text-foreground/80">{bowl.chakra}</p>
             </div>
-        </motion.div>
+        </m.div>
     );
 }

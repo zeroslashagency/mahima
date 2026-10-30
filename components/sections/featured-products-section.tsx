@@ -1,22 +1,20 @@
-"use client";
-
 import { FadeImage } from "@/components/fade-image";
 
 const features = [
   {
     title: "1:1 Sound Sanctuary",
     description: "Private Session",
-    image: "/asset/card-2.jpeg",
+    image: "/asset/card-2.webp",
   },
   {
     title: "Group Sound Bath",
     description: "Community",
-    image: "/asset/card-3.jpg",
+    image: "/asset/card-3-upright.webp",
   },
   {
     title: "Breathwork Journey",
     description: "Transformation",
-    image: "/asset/card-4.JPG",
+    image: "/asset/card-4.webp",
   },
 ];
 
@@ -45,6 +43,7 @@ export function FeaturedProductsSection() {
                 src={feature.image || "/placeholder.svg"}
                 alt={feature.title}
                 fill
+                sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover transition-all duration-700 ease-out group-hover:scale-105"
               />
             </div>

@@ -94,7 +94,7 @@ export function Header({ variant = "default" }: HeaderProps) {
         {/* CTA */}
         <div className="hidden items-center gap-6 md:flex">
           <Link
-            href="#reserve"
+            href="/#products"
             className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
               isLightPill
                 ? "bg-[#0f0e0c] text-[#fff9ef] hover:bg-[#1a1814]"
@@ -158,7 +158,7 @@ export function Header({ variant = "default" }: HeaderProps) {
               Play (Zen Game)
             </Link>
             <Link
-              href="#reserve"
+              href="/#products"
               className="mt-4 bg-foreground px-5 py-3 text-center text-sm font-medium text-background rounded-full"
               onClick={() => setIsMenuOpen(false)}
             >

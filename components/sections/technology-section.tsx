@@ -1,60 +1,108 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect, useRef } from "react";
+
+const DESKTOP_QUERY = "(min-width: 768px)";
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function useRafScroll(update: () => void, watchQueries = false) {
+  const updateRef = useRef(update);
+
+  useEffect(() => {
+    updateRef.current = update;
+  });
+
+  useEffect(() => {
+    let frame: number | null = null;
+    const schedule = () => {
+      if (frame !== null) return;
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        updateRef.current();
+      });
+    };
+
+    const queries = watchQueries
+      ? [window.matchMedia(DESKTOP_QUERY), window.matchMedia(REDUCED_MOTION_QUERY)]
+      : [window.matchMedia(REDUCED_MOTION_QUERY)];
+
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    queries.forEach((mql) => mql.addEventListener("change", schedule));
+    updateRef.current();
+
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      queries.forEach((mql) => mql.removeEventListener("change", schedule));
+      if (frame !== null) cancelAnimationFrame(frame);
+    };
+  }, [watchQueries]);
+}
+
+const REVEALED_COLOR = "var(--foreground)";
+const HIDDEN_COLOR = "#e4e4e7";
 
 function ScrollRevealText({ text }: { text: string }) {
   const containerRef = useRef<HTMLParagraphElement>(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!containerRef.current) return;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      // Slower animation - more viewport range
-      const startOffset = windowHeight * 0.9;
-      const endOffset = windowHeight * 0.1;
-
-      const totalDistance = startOffset - endOffset;
-      const currentPosition = startOffset - rect.top;
-
-      const newProgress = Math.max(0, Math.min(1, currentPosition / totalDistance));
-      setProgress(newProgress);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Initial check
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const revealedCountRef = useRef(0);
 
   const words = text.split(" ");
+
+  useRafScroll(() => {
+    if (!containerRef.current) return;
+
+    let progress = 1;
+    if (!window.matchMedia(REDUCED_MOTION_QUERY).matches) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const startOffset = windowHeight * 0.9;
+      const endOffset = windowHeight * 0.1;
+      const totalDistance = startOffset - endOffset;
+      const currentPosition = startOffset - rect.top;
+      progress = Math.max(0, Math.min(1, currentPosition / totalDistance));
+    }
+
+    const spans = wordRefs.current;
+    const total = spans.length;
+    let revealedCount = 0;
+    for (let i = 0; i < total; i++) {
+      if (progress > i / total) revealedCount = i + 1;
+    }
+    if (revealedCount === revealedCountRef.current) return;
+
+    const from = Math.min(revealedCount, revealedCountRef.current);
+    const to = Math.max(revealedCount, revealedCountRef.current);
+    for (let i = from; i < to; i++) {
+      const span = spans[i];
+      if (!span) continue;
+      const revealed = i < revealedCount;
+      span.style.color = revealed ? REVEALED_COLOR : HIDDEN_COLOR;
+      span.dataset.revealed = revealed ? "true" : "false";
+    }
+    revealedCountRef.current = revealedCount;
+  });
 
   return (
     <p
       ref={containerRef}
       className="text-3xl font-semibold leading-snug md:text-4xl lg:text-5xl"
     >
-      {words.map((word, index) => {
-        const wordProgress = index / words.length;
-        const isRevealed = progress > wordProgress;
-
-        return (
-          <span
-            key={index}
-            className="transition-colors duration-150"
-            style={{
-              color: isRevealed ? "var(--foreground)" : "#e4e4e7",
-            }}
-          >
-            {word}{index < words.length - 1 ? " " : ""}
-          </span>
-        );
-      })}
+      {words.map((word, index) => (
+        <span
+          key={index}
+          ref={(el) => {
+            wordRefs.current[index] = el;
+          }}
+          data-revealed="false"
+          className="transition-colors duration-150"
+          style={{ color: HIDDEN_COLOR }}
+        >
+          {word}{index < words.length - 1 ? " " : ""}
+        </span>
+      ))}
     </p>
   );
 }
@@ -86,47 +134,113 @@ const sideImages = [
   },
 ];
 
+const titleWords = ["Corporate", "Wellness", "Gurgaon."];
+
 export function TechnologySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const textSectionRef = useRef<HTMLDivElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const isMobile = useIsMobile();
+  const bentoRef = useRef<HTMLDivElement>(null);
+  const leftColumnRef = useRef<HTMLDivElement>(null);
+  const rightColumnRef = useRef<HTMLDivElement>(null);
+  const centerRef = useRef<HTMLDivElement>(null);
+  const sideTileRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const titleWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const layoutAnimatedRef = useRef(false);
 
   const descriptionText = "Stress is the silent productivity killer. Mahima's corporate wellness programs use sound healing and breathwork to reduce burnout, enhance creativity, and restore team synergy. Invest in the wellbeing of your workforce and watch performance soar.";
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
+  useRafScroll(() => {
+    if (!sectionRef.current) return;
 
+    const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
+    const animateLayout = !reducedMotion && window.matchMedia(DESKTOP_QUERY).matches;
+
+    let scrollProgress = 0;
+    if (!reducedMotion) {
       const rect = sectionRef.current.getBoundingClientRect();
       const scrollableHeight = window.innerHeight * 2;
-      const scrolled = -rect.top;
-      const progress = Math.max(0, Math.min(1, scrolled / scrollableHeight));
+      scrollProgress = Math.max(0, Math.min(1, -rect.top / scrollableHeight));
+    }
 
-      setScrollProgress(progress);
+    titleWordRefs.current.forEach((span, index) => {
+      if (!span) return;
+      const wordFadeStart = index * 0.07;
+      const wordProgress = Math.max(0, Math.min(1, (scrollProgress - wordFadeStart) / 0.07));
+      span.style.opacity = `${1 - wordProgress}`;
+      span.style.filter = `blur(${wordProgress * 10}px)`;
+    });
 
-    };
+    const bento = bentoRef.current;
+    const center = centerRef.current;
+    const columns = [leftColumnRef.current, rightColumnRef.current];
+    const tiles = sideTileRefs.current;
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    if (!animateLayout) {
+      if (!layoutAnimatedRef.current) return;
+      layoutAnimatedRef.current = false;
+      bento?.style.removeProperty("gap");
+      bento?.style.removeProperty("padding");
+      center?.style.removeProperty("width");
+      center?.style.removeProperty("border-radius");
+      columns.forEach((column, index) => {
+        if (!column) return;
+        column.style.removeProperty("width");
+        column.style.removeProperty("gap");
+        column.style.removeProperty("opacity");
+        column.style.transform = `translateX(${index === 0 ? -100 : 100}%)`;
+      });
+      tiles.forEach((tile) => tile?.style.removeProperty("border-radius"));
+      return;
+    }
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+    layoutAnimatedRef.current = true;
+    const imageProgress = Math.max(0, Math.min(1, (scrollProgress - 0.2) / 0.8));
+    const gap = `${imageProgress * 16}px`;
+    const radius = `${imageProgress * 24}px`;
+    const sideWidth = `${imageProgress * 22}%`;
+    const sideOffset = 100 - imageProgress * 100;
 
-  // Image transforms start after title fades (0.2 to 1)
-  const imageProgress = Math.max(0, Math.min(1, (scrollProgress - 0.2) / 0.8));
+    if (bento) {
+      bento.style.gap = gap;
+      bento.style.padding = gap;
+    }
+    if (center) {
+      center.style.width = `${100 - imageProgress * 58}%`;
+      center.style.borderRadius = radius;
+    }
+    columns.forEach((column, index) => {
+      if (!column) return;
+      column.style.width = sideWidth;
+      column.style.gap = gap;
+      column.style.transform = `translateX(${index === 0 ? -sideOffset : sideOffset}%)`;
+      column.style.opacity = `${imageProgress}`;
+    });
+    tiles.forEach((tile) => {
+      if (tile) tile.style.borderRadius = radius;
+    });
+  }, true);
 
-  // Smooth interpolations
-  const centerWidth = isMobile ? 100 : 100 - (imageProgress * 58); // 100% to 42%
-  const centerHeight = isMobile ? 100 : 100 - (imageProgress * 30); // 100% to 70%
-  const sideWidth = isMobile ? 0 : imageProgress * 22; // 0% to 22%
-  const sideOpacity = isMobile ? 0 : imageProgress;
-  const sideTranslateLeft = isMobile ? 0 : -100 + (imageProgress * 100); // -100% to 0%
-  const sideTranslateRight = isMobile ? 0 : 100 - (imageProgress * 100); // 100% to 0%
-  const borderRadius = isMobile ? 16 : imageProgress * 24; // 0px to 24px
-  const gap = isMobile ? 8 : imageProgress * 16; // 0px to 16px
+  const renderSideColumn = (position: "left" | "right", offset: number) =>
+    sideImages
+      .filter((img) => img.position === position)
+      .map((img, idx) => (
+        <div
+          key={idx}
+          ref={(el) => {
+            sideTileRefs.current[offset + idx] = el;
+          }}
+          className="relative overflow-hidden will-change-transform"
+          style={{ flex: img.span }}
+        >
+          <Image
+            src={img.src || "/placeholder.svg"}
+            alt={img.alt}
+            fill
+            sizes="22vw"
+            className="object-cover"
+          />
+        </div>
+      ));
 
   return (
     <section id="technology" ref={sectionRef} className="relative bg-foreground">
@@ -135,53 +249,29 @@ export function TechnologySection() {
         <div className="flex h-full w-full items-center justify-center">
           {/* Bento Grid Container */}
           <div
-            className="relative flex h-full w-full items-stretch justify-center"
-            style={{ gap: `${gap}px`, padding: `${isMobile ? 8 : imageProgress * 16}px` }}
+            ref={bentoRef}
+            className="relative flex h-full w-full items-stretch justify-center gap-2 p-2 md:gap-0 md:p-0"
           >
 
             {/* Left Column */}
             <div
-              className="hidden flex-col will-change-transform md:flex"
-              style={{
-                width: `${sideWidth}%`,
-                gap: `${gap}px`,
-                transform: `translateX(${sideTranslateLeft}%)`,
-                opacity: sideOpacity,
-              }}
+              ref={leftColumnRef}
+              className="hidden w-0 flex-col opacity-0 will-change-transform md:flex"
+              style={{ transform: "translateX(-100%)" }}
             >
-              {sideImages.filter(img => img.position === "left").map((img, idx) => (
-                <div
-                  key={idx}
-                  className="relative overflow-hidden will-change-transform"
-                  style={{
-                    flex: img.span,
-                    borderRadius: `${borderRadius}px`,
-                  }}
-                >
-                  <Image
-                    src={img.src || "/placeholder.svg"}
-                    alt={img.alt}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
+              {renderSideColumn("left", 0)}
             </div>
 
             {/* Main Center Image */}
             <div
-              className="relative overflow-hidden will-change-transform"
-              style={{
-                width: `${centerWidth}%`,
-                height: "100%",
-                flex: "0 0 auto",
-                borderRadius: `${borderRadius}px`,
-              }}
+              ref={centerRef}
+              className="relative h-full w-full flex-none overflow-hidden rounded-2xl will-change-transform md:rounded-none"
             >
               <Image
                 src="/asset/hero.jpg"
                 alt="Aerial view of sound healing sanctuary"
                 fill
+                sizes="100vw"
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-foreground/40" />
@@ -191,61 +281,33 @@ export function TechnologySection() {
                 className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
               >
                 <h2 className="max-w-3xl font-medium leading-tight tracking-tight text-white md:text-5xl lg:text-7xl text-5xl">
-                  {["Corporate", "Wellness", "Gurgaon."].map((word, index) => {
-                    // Each word fades out sequentially based on scrollProgress
-                    const wordFadeStart = index * 0.07; // Technology: 0, Meets: 0.07, Wilderness: 0.14
-                    const wordFadeEnd = wordFadeStart + 0.07;
-                    const wordProgress = Math.max(0, Math.min(1, (scrollProgress - wordFadeStart) / (wordFadeEnd - wordFadeStart)));
-                    const wordOpacity = 1 - wordProgress;
-                    const wordBlur = wordProgress * 10; // 0px to 10px blur
-
-                    return (
-                      <span
-                        key={index}
-                        className="inline-block"
-                        style={{
-                          opacity: wordOpacity,
-                          filter: `blur(${wordBlur}px)`,
-                          transition: 'opacity 0.1s linear, filter 0.1s linear',
-                          marginRight: index < 2 ? '0.3em' : '0',
-                        }}
-                      >
-                        {word}
-                        {index === 1 && <br />}
-                      </span>
-                    );
-                  })}
+                  {titleWords.map((word, index) => (
+                    <span
+                      key={index}
+                      ref={(el) => {
+                        titleWordRefs.current[index] = el;
+                      }}
+                      className="inline-block"
+                      style={{
+                        transition: "opacity 0.1s linear, filter 0.1s linear",
+                        marginRight: index < 2 ? "0.3em" : "0",
+                      }}
+                    >
+                      {word}
+                      {index === 1 && <br />}
+                    </span>
+                  ))}
                 </h2>
               </div>
             </div>
 
             {/* Right Column */}
             <div
-              className="hidden flex-col will-change-transform md:flex"
-              style={{
-                width: `${sideWidth}%`,
-                gap: `${gap}px`,
-                transform: `translateX(${sideTranslateRight}%)`,
-                opacity: sideOpacity,
-              }}
+              ref={rightColumnRef}
+              className="hidden w-0 flex-col opacity-0 will-change-transform md:flex"
+              style={{ transform: "translateX(100%)" }}
             >
-              {sideImages.filter(img => img.position === "right").map((img, idx) => (
-                <div
-                  key={idx}
-                  className="relative overflow-hidden will-change-transform"
-                  style={{
-                    flex: img.span,
-                    borderRadius: `${borderRadius}px`,
-                  }}
-                >
-                  <Image
-                    src={img.src || "/placeholder.svg"}
-                    alt={img.alt}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
+              {renderSideColumn("right", 2)}
             </div>
 
           </div>
@@ -260,9 +322,6 @@ export function TechnologySection() {
         ref={textSectionRef}
         className="relative overflow-hidden bg-background px-6 py-24 md:px-12 md:py-32 lg:px-20 lg:py-40"
       >
-        {/* Background Image with Grayscale Filter */}
-
-
         {/* Text Content */}
         <div className="relative z-10 mx-auto max-w-4xl">
           <ScrollRevealText text={descriptionText} />

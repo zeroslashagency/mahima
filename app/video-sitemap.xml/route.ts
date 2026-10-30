@@ -3,24 +3,24 @@ const baseUrl = 'https://healwithmahima.in'
 const videos = [
   {
     page: '/',
-    content: '/asset/vid-1.mp4',
+    content: '/asset/opt/vid-1.mp4',
     title: 'Sound bath in motion',
     description: 'Immersive sound healing session highlights.',
-    thumbnail: '/asset/hero-poster.webp',
+    thumbnail: '/asset/opt/vid-1-poster.webp',
   },
   {
     page: '/',
-    content: '/asset/vid-2.mp4',
+    content: '/asset/opt/vid-2.mp4',
     title: 'Breathwork flow',
     description: 'Guided breathwork and calm movement.',
-    thumbnail: '/asset/hero-poster.webp',
+    thumbnail: '/asset/opt/vid-2-poster.webp',
   },
   {
     page: '/',
-    content: '/asset/vid-3.mp4',
+    content: '/asset/opt/vid-3.mp4',
     title: 'Meditation space ambience',
     description: 'Meditation space ambience and soundscape.',
-    thumbnail: '/asset/hero-poster.webp',
+    thumbnail: '/asset/opt/vid-3-poster.webp',
   },
 ]
 
