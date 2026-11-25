@@ -1,0 +1,94 @@
+# Keep Pages CMS uploads scoped to the corporate section's upload folder.
+media:
+  input: public/uploads
+  output: /uploads
+  categories: [image]
+
+content:
+  - name: corporate
+    label: Home page corporate section
+    type: file
+    path: content/corporate.json
+    format: json
+    fields:
+      - name: titleWords
+        label: Title words
+        type: string
+        list: true
+        description: Add each title word separately, in the order it should fade out.
+      - name: mainImage
+        label: Center photo
+        type: image
+        description: Upload the large photo in the middle of the section.
+        options:
+          path: public/uploads
+      - name: mainImageAlt
+        label: Center photo description
+        type: string
+        description: Briefly describe the center photo for people who cannot see it.
+      - name: overlayLine
+        label: Photo message
+        type: string
+        description: This message appears over the center photo after the title fades.
+      - name: buttonText
+        label: Button text
+        type: string
+        description: Write the words shown on the button over the center photo.
+      - name: buttonLink
+        label: Button link
+        type: string
+        description: Enter a page path such as /corporate-wellness-gurgaon.
+      - name: leftPhoto
+        label: Left photo
+        type: image
+        description: Upload the photo shown in the left column.
+        options:
+          path: public/uploads
+      - name: leftPhotoAlt
+        label: Left photo description
+        type: string
+        description: Briefly describe the left photo for people who cannot see it.
+      - name: formatsLabel
+        label: Formats heading
+        type: string
+        description: Write the heading above the list of session formats.
+      - name: formats
+        label: Session formats
+        type: string
+        list: true
+        description: Add one session format per item, in display order.
+      - name: proofLabel
+        label: Right card heading
+        type: string
+        description: Write the short heading on the right column card.
+      - name: proofNumber
+        label: Highlight number
+        type: string
+        required: false
+        description: Add a number or short highlight; leave empty to hide it.
+      - name: proofText
+        label: Right card text
+        type: string
+        description: Write the supporting line on the right column card.
+      - name: logos
+        label: Company logos
+        type: image
+        list: true
+        required: false
+        description: Add company logos in display order; leave empty to hide them.
+        options:
+          path: public/uploads
+      - name: rightPhoto
+        label: Right photo
+        type: image
+        description: Upload the photo shown in the right column.
+        options:
+          path: public/uploads
+      - name: rightPhotoAlt
+        label: Right photo description
+        type: string
+        description: Briefly describe the right photo for people who cannot see it.
+      - name: paragraph
+        label: Section paragraph
+        type: text
+        description: Write the longer paragraph shown underneath the section.

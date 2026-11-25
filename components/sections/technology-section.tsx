@@ -1,6 +1,8 @@
 "use client";
 
+import { corporateContent } from "@/lib/corporate-content";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 const DESKTOP_QUERY = "(min-width: 768px)";
@@ -100,41 +102,33 @@ function ScrollRevealText({ text }: { text: string }) {
           className="transition-colors duration-150"
           style={{ color: HIDDEN_COLOR }}
         >
-          {word}{index < words.length - 1 ? " " : ""}
+          {word}
+          {index < words.length - 1 ? " " : ""}
         </span>
       ))}
     </p>
   );
 }
 
-const sideImages = [
-  {
-    src: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1000",
-    alt: "Forest trail",
-    position: "left",
-    span: 1,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1511593358241-7eea1f3c84e5?q=80&w=1000",
-    alt: "Mountain peak",
-    position: "left",
-    span: 1,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1000",
-    alt: "Alpine landscape",
-    position: "right",
-    span: 1,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000",
-    alt: "Snow mountain",
-    position: "right",
-    span: 1,
-  },
-];
-
-const titleWords = ["Corporate", "Wellness", "Gurgaon."];
+const {
+  titleWords,
+  mainImage,
+  mainImageAlt,
+  overlayLine,
+  buttonText,
+  buttonLink,
+  leftPhoto,
+  leftPhotoAlt,
+  formatsLabel,
+  formats,
+  proofLabel,
+  proofNumber,
+  proofText,
+  logos,
+  rightPhoto,
+  rightPhotoAlt,
+  paragraph,
+} = corporateContent;
 
 export function TechnologySection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -145,30 +139,49 @@ export function TechnologySection() {
   const centerRef = useRef<HTMLDivElement>(null);
   const sideTileRefs = useRef<(HTMLDivElement | null)[]>([]);
   const titleWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const layoutAnimatedRef = useRef(false);
-
-  const descriptionText = "Stress is the silent productivity killer. Mahima's corporate wellness programs use sound healing and breathwork to reduce burnout, enhance creativity, and restore team synergy. Invest in the wellbeing of your workforce and watch performance soar.";
 
   useRafScroll(() => {
     if (!sectionRef.current) return;
 
     const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
-    const animateLayout = !reducedMotion && window.matchMedia(DESKTOP_QUERY).matches;
+    const desktop = window.matchMedia(DESKTOP_QUERY).matches;
+    const animateLayout = !reducedMotion && desktop;
 
     let scrollProgress = 0;
     if (!reducedMotion) {
       const rect = sectionRef.current.getBoundingClientRect();
       const scrollableHeight = window.innerHeight * 2;
-      scrollProgress = Math.max(0, Math.min(1, -rect.top / scrollableHeight));
+      scrollProgress = Math.max(
+        0,
+        Math.min(1, -rect.top / scrollableHeight),
+      );
     }
 
     titleWordRefs.current.forEach((span, index) => {
       if (!span) return;
       const wordFadeStart = index * 0.07;
-      const wordProgress = Math.max(0, Math.min(1, (scrollProgress - wordFadeStart) / 0.07));
+      const wordProgress = Math.max(
+        0,
+        Math.min(1, (scrollProgress - wordFadeStart) / 0.07),
+      );
       span.style.opacity = `${1 - wordProgress}`;
       span.style.filter = `blur(${wordProgress * 10}px)`;
     });
+
+    const cta = ctaRef.current;
+    if (cta) {
+      const ctaStart = Math.max(0.22, titleWords.length * 0.07 + 0.01);
+      const ctaProgress =
+        reducedMotion || !desktop
+          ? 1
+          : Math.max(0, Math.min(1, (scrollProgress - ctaStart) / 0.13));
+      cta.style.opacity = `${ctaProgress}`;
+      cta.style.visibility = ctaProgress === 0 ? "hidden" : "visible";
+      cta.style.pointerEvents = ctaProgress === 0 ? "none" : "auto";
+      cta.toggleAttribute("inert", ctaProgress === 0);
+    }
 
     const bento = bentoRef.current;
     const center = centerRef.current;
@@ -194,7 +207,10 @@ export function TechnologySection() {
     }
 
     layoutAnimatedRef.current = true;
-    const imageProgress = Math.max(0, Math.min(1, (scrollProgress - 0.2) / 0.8));
+    const imageProgress = Math.max(
+      0,
+      Math.min(1, (scrollProgress - 0.2) / 0.8),
+    );
     const gap = `${imageProgress * 16}px`;
     const radius = `${imageProgress * 24}px`;
     const sideWidth = `${imageProgress * 22}%`;
@@ -220,46 +236,60 @@ export function TechnologySection() {
     });
   }, true);
 
-  const renderSideColumn = (position: "left" | "right", offset: number) =>
-    sideImages
-      .filter((img) => img.position === position)
-      .map((img, idx) => (
-        <div
-          key={idx}
-          ref={(el) => {
-            sideTileRefs.current[offset + idx] = el;
-          }}
-          className="relative overflow-hidden will-change-transform"
-          style={{ flex: img.span }}
-        >
-          <Image
-            src={img.src || "/placeholder.svg"}
-            alt={img.alt}
-            fill
-            sizes="22vw"
-            className="object-cover"
-          />
-        </div>
-      ));
-
   return (
     <section id="technology" ref={sectionRef} className="relative bg-foreground">
       {/* Sticky container for scroll animation */}
-      <div className="overflow-hidden h-[70vh] md:sticky md:top-0 md:h-screen">
+      <div className="h-[70vh] overflow-hidden md:sticky md:top-0 md:h-screen">
         <div className="flex h-full w-full items-center justify-center">
           {/* Bento Grid Container */}
           <div
             ref={bentoRef}
             className="relative flex h-full w-full items-stretch justify-center gap-2 p-2 md:gap-0 md:p-0"
           >
-
             {/* Left Column */}
             <div
               ref={leftColumnRef}
               className="hidden w-0 flex-col opacity-0 will-change-transform md:flex"
               style={{ transform: "translateX(-100%)" }}
             >
-              {renderSideColumn("left", 0)}
+              <div
+                ref={(el) => {
+                  sideTileRefs.current[0] = el;
+                }}
+                className="relative overflow-hidden will-change-transform"
+                style={{ flex: 1 }}
+              >
+                <Image
+                  src={leftPhoto}
+                  alt={leftPhotoAlt}
+                  fill
+                  sizes="22vw"
+                  className="object-cover"
+                />
+              </div>
+              <div
+                ref={(el) => {
+                  sideTileRefs.current[1] = el;
+                }}
+                className="relative overflow-hidden bg-background text-foreground will-change-transform"
+                style={{ flex: 1 }}
+              >
+                <div className="flex h-full flex-col justify-between p-[clamp(1rem,2vw,2.5rem)]">
+                  <p className="min-w-0 text-xs uppercase tracking-widest text-muted-foreground [overflow-wrap:anywhere]">
+                    {formatsLabel}
+                  </p>
+                  <ul className="min-w-0 space-y-[clamp(0.5rem,1.2vh,1rem)]">
+                    {formats.map((format, index) => (
+                      <li
+                        key={`${format}-${index}`}
+                        className="min-w-0 text-[clamp(1rem,1.55vw,1.75rem)] font-medium leading-tight [overflow-wrap:anywhere]"
+                      >
+                        {format}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
 
             {/* Main Center Image */}
@@ -268,36 +298,60 @@ export function TechnologySection() {
               className="relative h-full w-full flex-none overflow-hidden rounded-2xl will-change-transform md:rounded-none"
             >
               <Image
-                src="/asset/hero.jpg"
-                alt="Aerial view of sound healing sanctuary"
+                src={mainImage}
+                alt={mainImageAlt}
                 fill
                 sizes="100vw"
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-foreground/40" />
 
-              {/* Title Text - Fades out word by word with blur */}
-              <div
-                className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
-              >
-                <h2 className="max-w-3xl font-medium leading-tight tracking-tight text-white md:text-5xl lg:text-7xl text-5xl">
-                  {titleWords.map((word, index) => (
-                    <span
-                      key={index}
-                      ref={(el) => {
-                        titleWordRefs.current[index] = el;
-                      }}
-                      className="inline-block"
-                      style={{
-                        transition: "opacity 0.1s linear, filter 0.1s linear",
-                        marginRight: index < 2 ? "0.3em" : "0",
-                      }}
+              <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+                <div className="flex flex-col items-center gap-8">
+                  {/* Title Text - Fades out word by word with blur */}
+                  <h2 className="max-w-3xl text-5xl font-medium leading-tight tracking-tight text-white md:text-5xl lg:text-7xl">
+                    {titleWords.map((word, index) => (
+                      <span
+                        key={`${word}-${index}`}
+                        ref={(el) => {
+                          titleWordRefs.current[index] = el;
+                        }}
+                        className="inline-block"
+                        style={{
+                          transition:
+                            "opacity 0.1s linear, filter 0.1s linear",
+                          marginRight:
+                            index < titleWords.length - 1 ? "0.3em" : "0",
+                        }}
+                      >
+                        {word}
+                        {titleWords.length === 3 && index === 1 && <br />}
+                      </span>
+                    ))}
+                  </h2>
+
+                  <div
+                    ref={ctaRef}
+                    inert
+                    className="flex max-w-xl flex-col items-center gap-6 text-white md:motion-safe:absolute md:motion-safe:left-1/2 md:motion-safe:top-1/2 md:motion-safe:-translate-x-1/2 md:motion-safe:-translate-y-1/2"
+                    style={{
+                      opacity: 0,
+                      visibility: "hidden",
+                      pointerEvents: "none",
+                      transition: "opacity 0.1s linear",
+                    }}
+                  >
+                    <p className="min-w-0 text-[clamp(2rem,4vw,4.5rem)] font-medium leading-tight tracking-tight [overflow-wrap:anywhere]">
+                      {overlayLine}
+                    </p>
+                    <Link
+                      href={buttonLink}
+                      className="max-w-full rounded-full bg-white px-6 py-3 text-center text-sm font-medium text-foreground transition-opacity [overflow-wrap:anywhere] hover:opacity-80"
                     >
-                      {word}
-                      {index === 1 && <br />}
-                    </span>
-                  ))}
-                </h2>
+                      {buttonText}
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -307,9 +361,59 @@ export function TechnologySection() {
               className="hidden w-0 flex-col opacity-0 will-change-transform md:flex"
               style={{ transform: "translateX(100%)" }}
             >
-              {renderSideColumn("right", 2)}
+              <div
+                ref={(el) => {
+                  sideTileRefs.current[2] = el;
+                }}
+                className="relative overflow-hidden bg-background text-foreground will-change-transform"
+                style={{ flex: 1 }}
+              >
+                <div className="flex h-full flex-col justify-between p-[clamp(1rem,2vw,2.5rem)]">
+                  <p className="min-w-0 text-xs uppercase tracking-widest text-muted-foreground [overflow-wrap:anywhere]">
+                    {proofLabel}
+                  </p>
+                  <div className="min-w-0">
+                    {proofNumber && (
+                      <p className="text-[clamp(2.5rem,5vw,6rem)] font-medium leading-none tracking-tight [overflow-wrap:anywhere]">
+                        {proofNumber}
+                      </p>
+                    )}
+                    <p className="max-w-[18ch] text-[clamp(1rem,1.55vw,1.75rem)] font-medium leading-tight [overflow-wrap:anywhere]">
+                      {proofText}
+                    </p>
+                    {logos.length > 0 && (
+                      <div className="mt-[clamp(0.75rem,2vh,1.5rem)] flex flex-wrap items-center gap-3">
+                        {logos.map((logo, index) => (
+                          <Image
+                            key={`${logo}-${index}`}
+                            src={logo}
+                            alt=""
+                            width={96}
+                            height={32}
+                            className="h-6 w-auto max-w-[42%] object-contain"
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div
+                ref={(el) => {
+                  sideTileRefs.current[3] = el;
+                }}
+                className="relative overflow-hidden will-change-transform"
+                style={{ flex: 1 }}
+              >
+                <Image
+                  src={rightPhoto}
+                  alt={rightPhotoAlt}
+                  fill
+                  sizes="22vw"
+                  className="object-cover"
+                />
+              </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -324,7 +428,7 @@ export function TechnologySection() {
       >
         {/* Text Content */}
         <div className="relative z-10 mx-auto max-w-4xl">
-          <ScrollRevealText text={descriptionText} />
+          <ScrollRevealText text={paragraph} />
         </div>
       </div>
     </section>
