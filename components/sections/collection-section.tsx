@@ -1,49 +1,7 @@
 import { FadeImage } from "@/components/fade-image";
+import { shopContent } from "@/lib/cms";
 
-const accessories = [
-  {
-    id: 1,
-    name: "Crystal Sound Bowl",
-    description: "Frosted quartz bowl tuned to Heart Chakra (432Hz).",
-    price: "₹12,499",
-    image: "/asset/shop-crystal-bowl.png",
-  },
-  {
-    id: 2,
-    name: "Pure Brass Gong",
-    description: "Hand-hammered 32-inch gong for deep vibrational release.",
-    price: "₹18,999",
-    image: "/asset/shop-brass-gong.png",
-  },
-  {
-    id: 3,
-    name: "Tibetan Singing Bowl",
-    description: "Antique bronze bowl set with rosewood mallet.",
-    price: "₹8,500",
-    image: "/asset/shop-tibetan-bowl.png",
-  },
-  {
-    id: 4,
-    name: "Guided Meditation",
-    description: "Digital audio journey for deep sleep and anxiety relief.",
-    price: "₹999",
-    image: "/asset/shop-meditation-track.png",
-  },
-  {
-    id: 5,
-    name: "White Sage Bundle",
-    description: "Organic California white sage for space clearing.",
-    price: "₹1,200",
-    image: "/asset/shop-sage-kit.png",
-  },
-  {
-    id: 6,
-    name: "Chakra Healing Set",
-    description: "Seven polished crystals for energy alignment.",
-    price: "₹4,500",
-    image: "/asset/shop-chakra-set.png",
-  },
-];
+const accessories = shopContent.items.map((item, index) => ({ ...item, id: index }));
 
 export function CollectionSection() {
   return (
@@ -51,7 +9,7 @@ export function CollectionSection() {
       {/* Section Title */}
       <div className="px-6 py-20 md:px-12 lg:px-20 md:py-10">
         <h2 className="text-3xl font-medium tracking-tight text-foreground md:text-4xl">
-          Wellness Shop
+          {shopContent.heading}
         </h2>
       </div>
 
@@ -64,7 +22,7 @@ export function CollectionSection() {
               <div className="relative aspect-[2/3] overflow-hidden rounded-2xl bg-secondary">
                 <FadeImage
                   src={accessory.image || "/placeholder.svg"}
-                  alt={accessory.name}
+                  alt={accessory.imageAlt}
                   fill
                   sizes="(max-width: 768px) 75vw, 33vw"
                   className="object-cover group-hover:scale-105"

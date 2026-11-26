@@ -1,0 +1,18 @@
+{
+  "seo": {
+    "title": "Breathwork in Delhi NCR",
+    "description": "Guided breathwork journeys in Delhi-NCR to reduce stress, build clarity, and release emotional tension."
+  },
+  "kicker": "Breathwork",
+  "title": "Breathwork in Delhi NCR",
+  "intro": "Breath is the fastest way to shift your state. These guided sessions combine rhythmic breathing, intention setting, and grounding to help you clear mental noise and unlock a calmer, more focused nervous system.",
+  "buttons": [
+    { "label": "Reserve a Breathwork Session", "href": "/#products", "style": "primary" },
+    { "label": "Explore Full Programs", "href": "/#products", "style": "secondary" }
+  ],
+  "cards": [
+    { "title": "Stress Release", "text": "Gentle sessions designed to calm and decompress." },
+    { "title": "Clarity + Focus", "text": "Breathing techniques to boost mental clarity and energy." },
+    { "title": "Deep Reset", "text": "Long-form journeys for emotional release and recovery." }
+  ]
+}

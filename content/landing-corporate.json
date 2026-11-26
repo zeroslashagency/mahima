@@ -1,0 +1,18 @@
+{
+  "seo": {
+    "title": "Corporate Wellness in Gurgaon",
+    "description": "Corporate sound healing and breathwork programs in Gurgaon to reduce burnout, improve focus, and elevate team wellbeing."
+  },
+  "kicker": "Corporate Wellness",
+  "title": "Corporate Wellness in Gurgaon",
+  "intro": "Support your teams with sound healing and breathwork sessions that reduce stress, enhance creativity, and restore focus. Programs are designed for leadership offsites, wellness weeks, and ongoing team care.",
+  "buttons": [
+    { "label": "Request a Corporate Proposal", "href": "/#products", "style": "primary" },
+    { "label": "View Corporate Programs", "href": "/#products", "style": "secondary" }
+  ],
+  "cards": [
+    { "title": "On-site Sessions", "text": "Curated sound baths at your office or retreat." },
+    { "title": "Team Breathwork", "text": "Guided breathwork for focus and emotional release." },
+    { "title": "Wellness Weeks", "text": "Multi-session formats for sustained impact." }
+  ]
+}

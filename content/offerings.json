@@ -1,0 +1,24 @@
+{
+  "heading": "Core Wellness Offerings in Delhi NCR.",
+  "eyebrow": "Offerings",
+  "items": [
+    {
+      "kicker": "Private Session",
+      "title": "1:1 Sound Sanctuary",
+      "image": "/asset/card-2.webp",
+      "imageAlt": "1:1 Sound Sanctuary"
+    },
+    {
+      "kicker": "Community",
+      "title": "Group Sound Bath",
+      "image": "/asset/card-3-upright.webp",
+      "imageAlt": "Group Sound Bath"
+    },
+    {
+      "kicker": "Transformation",
+      "title": "Breathwork Journey",
+      "image": "/asset/card-4.webp",
+      "imageAlt": "Breathwork Journey"
+    }
+  ]
+}

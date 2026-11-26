@@ -1,22 +1,7 @@
 import { FadeImage } from "@/components/fade-image";
+import { offeringsContent } from "@/lib/cms";
 
-const features = [
-  {
-    title: "1:1 Sound Sanctuary",
-    description: "Private Session",
-    image: "/asset/card-2.webp",
-  },
-  {
-    title: "Group Sound Bath",
-    description: "Community",
-    image: "/asset/card-3-upright.webp",
-  },
-  {
-    title: "Breathwork Journey",
-    description: "Transformation",
-    image: "/asset/card-4.webp",
-  },
-];
+const { heading, eyebrow, items: features } = offeringsContent;
 
 export function FeaturedProductsSection() {
   return (
@@ -24,12 +9,10 @@ export function FeaturedProductsSection() {
       {/* Section Title */}
       <div className="px-6 py-20 text-center md:px-12 md:py-28 lg:px-20 lg:py-32 lg:pb-20">
         <h2 className="text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl">
-          Core Wellness Offerings
-          <br />
-          in Delhi NCR.
+          {heading}
         </h2>
         <p className="mx-auto mt-6 max-w-md text-sm text-muted-foreground">
-          Offerings
+          {eyebrow}
         </p>
       </div>
 
@@ -41,7 +24,7 @@ export function FeaturedProductsSection() {
             <div className="relative h-[420px] w-full overflow-hidden md:h-[631px]" style={{ borderRadius: "25px" }}>
               <FadeImage
                 src={feature.image || "/placeholder.svg"}
-                alt={feature.title}
+                alt={feature.imageAlt}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover transition-all duration-700 ease-out group-hover:scale-105"
@@ -51,7 +34,7 @@ export function FeaturedProductsSection() {
             {/* Content */}
             <div className="py-6">
               <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">
-                {feature.description}
+                {feature.kicker}
               </p>
               <h3 className="text-foreground text-xl font-semibold">
                 {feature.title}

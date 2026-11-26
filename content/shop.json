@@ -1,0 +1,47 @@
+{
+  "heading": "Wellness Shop",
+  "items": [
+    {
+      "name": "Crystal Sound Bowl",
+      "description": "Frosted quartz bowl tuned to Heart Chakra (432Hz).",
+      "price": "₹12,499",
+      "image": "/asset/shop-crystal-bowl.png",
+      "imageAlt": "Crystal Sound Bowl"
+    },
+    {
+      "name": "Pure Brass Gong",
+      "description": "Hand-hammered 32-inch gong for deep vibrational release.",
+      "price": "₹18,999",
+      "image": "/asset/shop-brass-gong.png",
+      "imageAlt": "Pure Brass Gong"
+    },
+    {
+      "name": "Tibetan Singing Bowl",
+      "description": "Antique bronze bowl set with rosewood mallet.",
+      "price": "₹8,500",
+      "image": "/asset/shop-tibetan-bowl.png",
+      "imageAlt": "Tibetan Singing Bowl"
+    },
+    {
+      "name": "Guided Meditation",
+      "description": "Digital audio journey for deep sleep and anxiety relief.",
+      "price": "₹999",
+      "image": "/asset/shop-meditation-track.png",
+      "imageAlt": "Guided Meditation"
+    },
+    {
+      "name": "White Sage Bundle",
+      "description": "Organic California white sage for space clearing.",
+      "price": "₹1,200",
+      "image": "/asset/shop-sage-kit.png",
+      "imageAlt": "White Sage Bundle"
+    },
+    {
+      "name": "Chakra Healing Set",
+      "description": "Seven polished crystals for energy alignment.",
+      "price": "₹4,500",
+      "image": "/asset/shop-chakra-set.png",
+      "imageAlt": "Chakra Healing Set"
+    }
+  ]
+}

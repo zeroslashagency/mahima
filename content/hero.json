@@ -1,0 +1,9 @@
+{
+  "srText": "Heal with Mahima: Delhi-NCR's Premium Sound Healing",
+  "sideImages": [
+    { "src": "/asset/side-1.webp", "alt": "Meditation Space", "position": "left" },
+    { "src": "/asset/side-2.webp", "alt": "Sound Healing Session", "position": "left" },
+    { "src": "/asset/side-3.webp", "alt": "Peaceful Sanctuary", "position": "right" },
+    { "src": "/asset/card-4.webp", "alt": "Gong Detail", "position": "right" }
+  ]
+}

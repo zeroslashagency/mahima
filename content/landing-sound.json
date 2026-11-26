@@ -1,0 +1,18 @@
+{
+  "seo": {
+    "title": "Sound Healing in Delhi NCR",
+    "description": "Private and group sound healing sessions in Delhi-NCR. Restore calm, reduce stress, and realign your nervous system with curated sound journeys."
+  },
+  "kicker": "Sound Healing",
+  "title": "Sound Healing in Delhi NCR",
+  "intro": "Experience immersive sound baths and one-on-one sessions designed to calm the mind, release tension, and guide you into deep restorative states. Mahima blends Himalayan singing bowls, gongs, and breathwork to help you reset your nervous system and reconnect with inner stillness.",
+  "buttons": [
+    { "label": "Book a Private Session", "href": "/#products", "style": "primary" },
+    { "label": "View All Offerings", "href": "/#products", "style": "secondary" }
+  ],
+  "cards": [
+    { "title": "Private Sessions", "text": "Personalized sound journeys tailored to your goals and energy." },
+    { "title": "Group Sound Baths", "text": "Shared immersive experiences for community healing." },
+    { "title": "Breath + Sound", "text": "Breathwork sequences that deepen the vibrational reset." }
+  ]
+}

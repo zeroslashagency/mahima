@@ -2,19 +2,11 @@
 
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useRef } from "react";
+import { galleryContent } from "@/lib/cms";
 
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-const galleryItems = [
-  { type: "video", src: "/asset/opt/vid-1.mp4", poster: "/asset/opt/vid-1-poster.webp", label: "Sound bath in motion" },
-  { type: "image", src: "/asset/card-2.webp", alt: "Sound Bath Session" },
-  { type: "video", src: "/asset/opt/vid-2.mp4", poster: "/asset/opt/vid-2-poster.webp", label: "Breathwork flow" },
-  { type: "image", src: "/asset/side-1.webp", alt: "Bowl Vibration" },
-  { type: "image", src: "/asset/side-2.webp", alt: "Nature Retreat" },
-  { type: "video", src: "/asset/opt/vid-3.mp4", poster: "/asset/opt/vid-3-poster.webp", label: "Meditation space ambience" },
-  { type: "image", src: "/asset/card-3-upright.webp", alt: "Group Meditation" },
-  { type: "image", src: "/asset/card-4.webp", alt: "Closing Circle" },
-];
+const galleryItems = galleryContent.items;
 
 export function GallerySection() {
   const galleryRef = useRef<HTMLElement>(null);
@@ -121,7 +113,7 @@ export function GallerySection() {
                 key={index}
                 className="relative h-[70vh] w-[85vw] flex-shrink-0 overflow-hidden rounded-2xl md:h-[60vh] md:w-[32vw] lg:w-[26vw] xl:w-[24vw]"
               >
-                {item.type === "video" ? (
+                {item.kind === "video" ? (
                   <video
                     ref={(el) => {
                       videoRefs.current[index] = el;
@@ -130,7 +122,7 @@ export function GallerySection() {
                     muted
                     playsInline
                     preload="none"
-                    poster={item.poster}
+                    poster={item.poster || undefined}
                     aria-label={item.label}
                     className="absolute inset-0 h-full w-full object-cover"
                   >

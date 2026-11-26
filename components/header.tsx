@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { siteContent } from "@/lib/cms";
 
 type HeaderProps = {
   variant?: "default" | "pill-light";
@@ -44,57 +45,39 @@ export function Header({ variant = "default" }: HeaderProps) {
             isElevated ? "text-foreground" : "text-white"
           }`}
         >
-          MAHIMA
+          {siteContent.brandName}
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-10 md:flex">
-          <Link
-            href="#products"
-            className={`text-sm transition-colors ${
-              isElevated ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"
-            }`}
-          >
-            Offerings
-          </Link>
-          <Link
-            href="#technology"
-            className={`text-sm transition-colors ${
-              isElevated ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"
-            }`}
-          >
-            Corporate
-          </Link>
-          <Link
-            href="#gallery"
-            className={`text-sm transition-colors ${
-              isElevated ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"
-            }`}
-          >
-            Journal
-          </Link>
-          <Link
-            href="#accessories"
-            className={`text-sm transition-colors ${
-              isElevated ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"
-            }`}
-          >
-            Shop
-          </Link>
-          <Link
-            href="/play"
-            className={`text-sm font-medium transition-colors ${
-              isElevated ? "text-foreground hover:opacity-80" : "text-white hover:text-white/80"
-            }`}
-          >
-            Play
-          </Link>
+          {siteContent.nav.map((item) => {
+            const isPageLink = !item.href.startsWith("#");
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={
+                  isPageLink
+                    ? `text-sm font-medium transition-colors ${
+                        isElevated ? "text-foreground hover:opacity-80" : "text-white hover:text-white/80"
+                      }`
+                    : `text-sm transition-colors ${
+                        isElevated
+                          ? "text-muted-foreground hover:text-foreground"
+                          : "text-white/70 hover:text-white"
+                      }`
+                }
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* CTA */}
         <div className="hidden items-center gap-6 md:flex">
           <Link
-            href="/#products"
+            href={siteContent.ctaButton.href}
             className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
               isLightPill
                 ? "bg-[#0f0e0c] text-[#fff9ef] hover:bg-[#1a1814]"
@@ -103,7 +86,7 @@ export function Header({ variant = "default" }: HeaderProps) {
                   : "bg-white text-foreground hover:bg-white/90"
             }`}
           >
-            Book a Session
+            {siteContent.ctaButton.label}
           </Link>
         </div>
 
@@ -122,47 +105,26 @@ export function Header({ variant = "default" }: HeaderProps) {
       {isMenuOpen && (
         <div className="border-t border-border bg-background px-6 py-8 md:hidden rounded-b-2xl">
           <nav className="flex flex-col gap-6">
+            {siteContent.nav.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={
+                  item.href.startsWith("#")
+                    ? "text-lg text-foreground"
+                    : "text-lg font-medium text-foreground"
+                }
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.mobileLabel}
+              </Link>
+            ))}
             <Link
-              href="#products"
-              className="text-lg text-foreground"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Offerings
-            </Link>
-            <Link
-              href="#technology"
-              className="text-lg text-foreground"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Corporate
-            </Link>
-            <Link
-              href="#gallery"
-              className="text-lg text-foreground"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Journal
-            </Link>
-            <Link
-              href="#accessories"
-              className="text-lg text-foreground"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Shop
-            </Link>
-            <Link
-              href="/play"
-              className="text-lg font-medium text-foreground"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Play (Zen Game)
-            </Link>
-            <Link
-              href="/#products"
+              href={siteContent.ctaButton.href}
               className="mt-4 bg-foreground px-5 py-3 text-center text-sm font-medium text-background rounded-full"
               onClick={() => setIsMenuOpen(false)}
             >
-              Book a Session
+              {siteContent.ctaButton.label}
             </Link>
           </nav>
         </div>

@@ -1,0 +1,27 @@
+{
+  "items": [
+    {
+      "kind": "video",
+      "videoSrc": "/asset/opt/vid-1.mp4",
+      "poster": "/asset/opt/vid-1-poster.webp",
+      "label": "Sound bath in motion"
+    },
+    { "kind": "image", "imageSrc": "/asset/card-2.webp", "alt": "Sound Bath Session" },
+    {
+      "kind": "video",
+      "videoSrc": "/asset/opt/vid-2.mp4",
+      "poster": "/asset/opt/vid-2-poster.webp",
+      "label": "Breathwork flow"
+    },
+    { "kind": "image", "imageSrc": "/asset/side-1.webp", "alt": "Bowl Vibration" },
+    { "kind": "image", "imageSrc": "/asset/side-2.webp", "alt": "Nature Retreat" },
+    {
+      "kind": "video",
+      "videoSrc": "/asset/opt/vid-3.mp4",
+      "poster": "/asset/opt/vid-3-poster.webp",
+      "label": "Meditation space ambience"
+    },
+    { "kind": "image", "imageSrc": "/asset/card-3-upright.webp", "alt": "Group Meditation" },
+    { "kind": "image", "imageSrc": "/asset/card-4.webp", "alt": "Closing Circle" }
+  ]
+}

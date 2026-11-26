@@ -8,6 +8,7 @@ import { InteractiveBowl, getAudioContext, type InteractiveBowlHandle } from "@/
 import { ControlPanel } from "@/components/game/control-panel";
 import { ZenErrorBoundary } from "@/components/game/zen-error-boundary";
 import { LazyMotion, domAnimation, m, AnimatePresence, useReducedMotion } from "framer-motion";
+import { playContent } from "@/lib/cms";
 
 interface BowlData {
     id: string;
@@ -88,7 +89,7 @@ function PlayContent() {
                 className="fixed top-28 left-6 z-50 md:left-20"
             >
                 <Link href="/" className="text-sm font-medium opacity-50 hover:opacity-100 transition-opacity flex items-center gap-2">
-                    ← Return to Sanctuary
+                    {playContent.backLink}
                 </Link>
             </m.div>
 
@@ -154,11 +155,9 @@ function PlayContent() {
                     className="text-center mb-16"
                 >
                     <h1 className="text-4xl font-medium tracking-tighter md:text-8xl mb-6">
-                        Zen Playground
+                        {playContent.heading}
                     </h1>
-                    <p className="text-muted-foreground/60 text-lg md:text-xl max-w-2xl mx-auto font-light">
-                        An immersive sound sanctuary. Use keys <span className="text-foreground font-medium">1-7</span> to strike bowls, or click and hold to hear them sing.
-                    </p>
+                    <PlayDescription />
                 </m.div>
 
                 {/* Two-Row Staggered Grid Layout (As per user sketch) */}
@@ -195,6 +194,26 @@ function PlayContent() {
 
             <FooterSection />
         </main>
+    );
+}
+
+function PlayDescription() {
+    const { description, descriptionHighlight } = playContent;
+    const highlightIndex = descriptionHighlight
+        ? description.indexOf(descriptionHighlight)
+        : -1;
+    return (
+        <p className="text-muted-foreground/60 text-lg md:text-xl max-w-2xl mx-auto font-light">
+            {highlightIndex === -1 ? (
+                description
+            ) : (
+                <>
+                    {description.slice(0, highlightIndex)}
+                    <span className="text-foreground font-medium">{descriptionHighlight}</span>
+                    {description.slice(highlightIndex + descriptionHighlight.length)}
+                </>
+            )}
+        </p>
     );
 }
 

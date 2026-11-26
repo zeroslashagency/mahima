@@ -1,0 +1,52 @@
+{
+  "brandName": "MAHIMA",
+  "nav": [
+    { "label": "Offerings", "href": "#products" },
+    { "label": "Corporate", "href": "#technology" },
+    { "label": "Journal", "href": "#gallery" },
+    { "label": "Shop", "href": "#accessories" },
+    { "label": "Play", "href": "/play", "mobileLabel": "Play (Zen Game)" }
+  ],
+  "ctaButton": { "label": "Book a Session", "href": "/#products" },
+  "footerBrandName": "HEAL WITH MAHIMA",
+  "footerBlurb": "Transformative Sound Healing and Breathwork journeys engineered for the modern soul. Rediscover your inner sanctuary.",
+  "footerColumns": [
+    {
+      "heading": "Explore",
+      "links": [
+        { "label": "Offerings", "href": "#products" },
+        { "label": "Corporate", "href": "#technology" },
+        { "label": "Journal", "href": "#gallery" },
+        { "label": "Shop", "href": "#accessories" }
+      ]
+    },
+    {
+      "heading": "About",
+      "links": [
+        { "label": "Our Story", "href": "#" },
+        { "label": "Heal with Mahima", "href": "#" },
+        { "label": "Careers", "href": "#" },
+        { "label": "Contact", "href": "#" }
+      ]
+    },
+    {
+      "heading": "Service",
+      "links": [
+        { "label": "FAQ", "href": "#" },
+        { "label": "Booking Policy", "href": "#" },
+        { "label": "Refund Policy", "href": "#" },
+        { "label": "Wellness Guide", "href": "#" }
+      ]
+    }
+  ],
+  "socials": [
+    { "label": "Instagram", "href": "#" },
+    { "label": "Twitter", "href": "#" },
+    { "label": "YouTube", "href": "#" }
+  ],
+  "copyright": "2026 HEAL WITH MAHIMA. All rights reserved.",
+  "seo": {
+    "title": "Sound Healing & Breathwork in Delhi NCR",
+    "description": "Premium sound healing, breathwork, and meditative journeys in Delhi-NCR. Private sessions, group sound baths, and corporate wellness experiences."
+  }
+}

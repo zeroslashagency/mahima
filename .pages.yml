@@ -1,8 +1,16 @@
-# Keep Pages CMS uploads scoped to the corporate section's upload folder.
+# Pages CMS configuration. Editing here changes the CMS form;
+# editing content/*.json changes the site. Uploads land in git.
 media:
-  input: public/uploads
-  output: /uploads
-  categories: [image]
+  - name: images
+    label: Images
+    input: public/uploads
+    output: /uploads
+    categories: [image]
+  - name: videos
+    label: Videos
+    input: public/asset/opt
+    output: /asset/opt
+    categories: [video]
 
 content:
   - name: corporate
@@ -21,6 +29,7 @@ content:
         type: image
         description: Upload the large photo in the middle of the section.
         options:
+          media: images
           path: public/uploads
       - name: mainImageAlt
         label: Center photo description
@@ -43,6 +52,7 @@ content:
         type: image
         description: Upload the photo shown in the left column.
         options:
+          media: images
           path: public/uploads
       - name: leftPhotoAlt
         label: Left photo description
@@ -77,12 +87,14 @@ content:
         required: false
         description: Add company logos in display order; leave empty to hide them.
         options:
+          media: images
           path: public/uploads
       - name: rightPhoto
         label: Right photo
         type: image
         description: Upload the photo shown in the right column.
         options:
+          media: images
           path: public/uploads
       - name: rightPhotoAlt
         label: Right photo description
@@ -92,3 +104,593 @@ content:
         label: Section paragraph
         type: text
         description: Write the longer paragraph shown underneath the section.
+
+  - name: site
+    label: Header, footer and home SEO
+    type: file
+    path: content/site.json
+    format: json
+    fields:
+      - name: brandName
+        label: Header brand name
+        type: string
+        description: Short brand text shown in the header, for example MAHIMA.
+      - name: nav
+        label: Navigation links
+        type: object
+        list: true
+        description: Header links in display order. Page links (starting with /) get the emphasized style.
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.label}}"
+        fields:
+          - name: label
+            label: Label
+            type: string
+          - name: href
+            label: Link
+            type: string
+            description: Anchor such as #products or a page path such as /play.
+          - name: mobileLabel
+            label: Mobile label
+            type: string
+            required: false
+            description: Optional different label on the mobile menu; leave empty to reuse the label.
+      - name: ctaButton
+        label: Header button
+        type: object
+        description: The booking button in the header.
+        fields:
+          - name: label
+            label: Label
+            type: string
+          - name: href
+            label: Link
+            type: string
+      - name: footerBrandName
+        label: Footer brand name
+        type: string
+      - name: footerBlurb
+        label: Footer tagline
+        type: text
+        description: Short paragraph under the footer brand name.
+      - name: footerColumns
+        label: Footer link columns
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.heading}}"
+        fields:
+          - name: heading
+            label: Heading
+            type: string
+          - name: links
+            label: Links
+            type: object
+            list: true
+            fields:
+              - name: label
+                label: Label
+                type: string
+              - name: href
+                label: Link
+                type: string
+      - name: socials
+        label: Social links
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.label}}"
+        fields:
+          - name: label
+            label: Label
+            type: string
+          - name: href
+            label: Link
+            type: string
+      - name: copyright
+        label: Copyright line
+        type: string
+        description: Bottom-bar line, for example 2026 HEAL WITH MAHIMA. All rights reserved.
+      - name: seo
+        label: Home page SEO
+        type: object
+        fields:
+          - name: title
+            label: Page title
+            type: string
+          - name: description
+            label: Page description
+            type: string
+
+  - name: hero
+    label: Hero side photos
+    type: file
+    path: content/hero.json
+    format: json
+    fields:
+      - name: srText
+        label: Hidden heading text
+        type: string
+        description: Screen-reader heading describing the site.
+      - name: sideImages
+        label: Side photos
+        type: object
+        list: true
+        description: Photos sliding in on the left and right of the hero.
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.alt}}"
+        fields:
+          - name: src
+            label: Photo
+            type: image
+            options:
+              media: images
+              path: public/uploads
+          - name: alt
+            label: Photo description
+            type: string
+          - name: position
+            label: Side
+            type: select
+            options:
+              values: [left, right]
+
+  - name: philosophy
+    label: Philosophy section
+    type: file
+    path: content/philosophy.json
+    format: json
+    fields:
+      - name: heading
+        label: Heading
+        type: string
+      - name: paragraph
+        label: Paragraph
+        type: text
+      - name: image
+        label: Photo
+        type: image
+        options:
+          media: images
+          path: public/uploads
+      - name: imageAlt
+        label: Photo description
+        type: string
+      - name: notes
+        label: Body notes
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.label}}"
+        fields:
+          - name: label
+            label: Label
+            type: string
+          - name: title
+            label: Text
+            type: string
+
+  - name: intro
+    label: Intro section
+    type: file
+    path: content/intro.json
+    format: json
+    fields:
+      - name: greeting
+        label: Greeting
+        type: string
+        description: Large opening word, for example Namaste,
+      - name: leadPrefix
+        label: Sentence start
+        type: string
+        description: Text before the rotating audience word, for example "I'm Mahima. I help".
+      - name: leadSuffix
+        label: Sentence middle
+        type: string
+        description: Text after the rotating audience word, for example "find their way back to calm through".
+      - name: audiences
+        label: Audience words
+        type: string
+        list: true
+        description: Words that rotate in the sentence, in display order.
+      - name: practices
+        label: Practices
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.word}}"
+        fields:
+          - name: word
+            label: Word
+            type: string
+          - name: color
+            label: Color
+            type: string
+            description: Hex color such as #b5651d.
+      - name: tagline
+        label: Tagline
+        type: string
+      - name: buttons
+        label: Buttons
+        type: object
+        list: true
+        description: First button is filled, the rest are outlined.
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.label}}"
+        fields:
+          - name: label
+            label: Label
+            type: string
+          - name: href
+            label: Link
+            type: string
+
+  - name: offerings
+    label: Offerings catalogue
+    type: file
+    path: content/offerings.json
+    format: json
+    fields:
+      - name: heading
+        label: Heading
+        type: string
+      - name: eyebrow
+        label: Eyebrow
+        type: string
+        description: Small text under the heading.
+      - name: items
+        label: Offerings
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.title}}"
+        fields:
+          - name: kicker
+            label: Kicker
+            type: string
+            description: Small label above the title, for example Private Session.
+          - name: title
+            label: Title
+            type: string
+          - name: image
+            label: Photo
+            type: image
+            options:
+              media: images
+              path: public/uploads
+          - name: imageAlt
+            label: Photo description
+            type: string
+
+  - name: shop
+    label: Wellness Shop catalogue
+    type: file
+    path: content/shop.json
+    format: json
+    fields:
+      - name: heading
+        label: Heading
+        type: string
+      - name: items
+        label: Products
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.name}}"
+        fields:
+          - name: name
+            label: Name
+            type: string
+          - name: description
+            label: Description
+            type: string
+          - name: price
+            label: Price
+            type: string
+            description: Price text exactly as shown, for example ₹12,499.
+          - name: image
+            label: Photo
+            type: image
+            options:
+              media: images
+              path: public/uploads
+          - name: imageAlt
+            label: Photo description
+            type: string
+
+  - name: gallery
+    label: Gallery
+    type: file
+    path: content/gallery.json
+    format: json
+    fields:
+      - name: items
+        label: Gallery items
+        type: object
+        list: true
+        description: Photos and videos in display order. For photos fill in Image and Alt text; for videos fill in Video file, Poster and Label.
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.label}}{{field.alt}}"
+        fields:
+          - name: kind
+            label: Type
+            type: select
+            options:
+              values: [image, video]
+          - name: imageSrc
+            label: Image
+            type: image
+            required: false
+            options:
+              media: images
+              path: public/uploads
+          - name: alt
+            label: Alt text
+            type: string
+            required: false
+            description: Description of the photo, used for photos only.
+          - name: videoSrc
+            label: Video file
+            type: file
+            required: false
+            description: MP4 video file, used for videos only.
+            options:
+              media: videos
+              extensions: [mp4]
+          - name: poster
+            label: Poster
+            type: image
+            required: false
+            description: Still image shown before the video plays.
+            options:
+              media: images
+              path: public/uploads
+          - name: label
+            label: Label
+            type: string
+            required: false
+            description: Accessible label for the video, used for videos only.
+
+  - name: about
+    label: About statement
+    type: file
+    path: content/about.json
+    format: json
+    fields:
+      - name: statement
+        label: Statement
+        type: text
+        description: Large statement text above the about photo.
+      - name: image
+        label: Photo
+        type: image
+        options:
+          media: images
+          path: public/uploads
+      - name: imageAlt
+        label: Photo description
+        type: string
+
+  - name: landing-corporate
+    label: Corporate landing page
+    type: file
+    path: content/landing-corporate.json
+    format: json
+    fields:
+      - name: seo
+        label: Page SEO
+        type: object
+        fields:
+          - name: title
+            label: Page title
+            type: string
+          - name: description
+            label: Page description
+            type: string
+      - name: kicker
+        label: Kicker
+        type: string
+      - name: title
+        label: Heading
+        type: string
+      - name: intro
+        label: Intro paragraph
+        type: text
+      - name: buttons
+        label: Buttons
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.label}}"
+        fields:
+          - name: label
+            label: Label
+            type: string
+          - name: href
+            label: Link
+            type: string
+          - name: style
+            label: Style
+            type: select
+            options:
+              values: [primary, secondary]
+      - name: cards
+        label: Cards
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.title}}"
+        fields:
+          - name: title
+            label: Title
+            type: string
+          - name: text
+            label: Text
+            type: string
+
+  - name: landing-breathwork
+    label: Breathwork landing page
+    type: file
+    path: content/landing-breathwork.json
+    format: json
+    fields:
+      - name: seo
+        label: Page SEO
+        type: object
+        fields:
+          - name: title
+            label: Page title
+            type: string
+          - name: description
+            label: Page description
+            type: string
+      - name: kicker
+        label: Kicker
+        type: string
+      - name: title
+        label: Heading
+        type: string
+      - name: intro
+        label: Intro paragraph
+        type: text
+      - name: buttons
+        label: Buttons
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.label}}"
+        fields:
+          - name: label
+            label: Label
+            type: string
+          - name: href
+            label: Link
+            type: string
+          - name: style
+            label: Style
+            type: select
+            options:
+              values: [primary, secondary]
+      - name: cards
+        label: Cards
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.title}}"
+        fields:
+          - name: title
+            label: Title
+            type: string
+          - name: text
+            label: Text
+            type: string
+
+  - name: landing-sound
+    label: Sound healing landing page
+    type: file
+    path: content/landing-sound.json
+    format: json
+    fields:
+      - name: seo
+        label: Page SEO
+        type: object
+        fields:
+          - name: title
+            label: Page title
+            type: string
+          - name: description
+            label: Page description
+            type: string
+      - name: kicker
+        label: Kicker
+        type: string
+      - name: title
+        label: Heading
+        type: string
+      - name: intro
+        label: Intro paragraph
+        type: text
+      - name: buttons
+        label: Buttons
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.label}}"
+        fields:
+          - name: label
+            label: Label
+            type: string
+          - name: href
+            label: Link
+            type: string
+          - name: style
+            label: Style
+            type: select
+            options:
+              values: [primary, secondary]
+      - name: cards
+        label: Cards
+        type: object
+        list: true
+        options:
+          collapsible: true
+          collapsed: true
+          summary: "{{field.title}}"
+        fields:
+          - name: title
+            label: Title
+            type: string
+          - name: text
+            label: Text
+            type: string
+
+  - name: play
+    label: Zen Playground page
+    type: file
+    path: content/play.json
+    format: json
+    fields:
+      - name: backLink
+        label: Back link text
+        type: string
+      - name: heading
+        label: Heading
+        type: string
+      - name: description
+        label: Description
+        type: text
+        description: Intro sentence under the heading. The highlight text below is styled brighter.
+      - name: descriptionHighlight
+        label: Highlight text
+        type: string
+        description: Short phrase inside the description that is highlighted, for example 1-7.

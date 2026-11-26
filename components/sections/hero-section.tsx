@@ -4,33 +4,9 @@ import Image from "next/image";
 import { useEffect, useRef, type CSSProperties } from "react";
 import { LogoMotion } from "@/components/brand/logo-motion";
 import { WaterSurface } from "./water-surface";
+import { heroContent } from "@/lib/cms";
 
-const sideImages = [
-  {
-    src: "/asset/side-1.webp",
-    alt: "Meditation Space",
-    position: "left",
-    span: 1,
-  },
-  {
-    src: "/asset/side-2.webp",
-    alt: "Sound Healing Session",
-    position: "left",
-    span: 1,
-  },
-  {
-    src: "/asset/side-3.webp",
-    alt: "Peaceful Sanctuary",
-    position: "right",
-    span: 1,
-  },
-  {
-    src: "/asset/card-4.webp",
-    alt: "Gong Detail",
-    position: "right",
-    span: 1,
-  },
-];
+const sideImages = heroContent.sideImages.map((img) => ({ ...img, span: 1 }));
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -140,7 +116,7 @@ export function HeroSection() {
 
       {/* Shrunk box ends 30vh+65px above the frame bottom; pull the logo up into that space. */}
       <div className="relative z-10 px-6 pt-4 pb-10 md:px-12 md:pt-10 md:pb-24 md:motion-safe:-mt-[calc(30vh+65px)] lg:px-20 lg:pt-12 lg:pb-32">
-        <p className="sr-only">Heal with Mahima: Delhi-NCR&apos;s Premium Sound Healing</p>
+        <p className="sr-only">{heroContent.srText}</p>
         <LogoMotion className="mx-auto" />
       </div>
     </section>

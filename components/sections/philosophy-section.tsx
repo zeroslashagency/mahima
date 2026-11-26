@@ -1,20 +1,6 @@
 import Image from "next/image";
 import { LiveWave } from "./live-wave";
-
-const physiologyNotes = [
-  {
-    label: "Breath",
-    title: "Short, shallow breaths turn into slower, fuller cycles.",
-  },
-  {
-    label: "Muscles",
-    title: "Tension you've been holding starts to let go.",
-  },
-  {
-    label: "Attention",
-    title: "Focus takes less effort and settles back into the body.",
-  },
-];
+import { philosophyContent } from "@/lib/cms";
 
 export function PhilosophySection() {
   return (
@@ -23,19 +9,18 @@ export function PhilosophySection() {
         <div className="grid gap-12 md:grid-cols-12 md:items-end md:gap-10">
           <div className="md:col-span-7">
             <h2 className="text-balance text-4xl font-medium leading-[0.95] tracking-tight text-foreground md:text-6xl lg:text-7xl">
-              What sound does to the body.
+              {philosophyContent.heading}
             </h2>
             <p className="mt-8 max-w-[34rem] text-pretty text-lg leading-relaxed text-muted-foreground">
-              Vibration helps the body move out of a high-alert state and into a slower, steadier rhythm. You can
-              feel the change: breath deepens, held muscles soften, and attention stops racing.
+              {philosophyContent.paragraph}
             </p>
           </div>
 
           <div className="md:col-span-5">
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[24px] bg-secondary">
               <Image
-                src="/asset/card-4.webp"
-                alt="A breathwork session with Mahima"
+                src={philosophyContent.image}
+                alt={philosophyContent.imageAlt}
                 fill
                 sizes="(max-width: 768px) 100vw, 40vw"
                 className="object-cover object-[center_18%]"
@@ -48,7 +33,7 @@ export function PhilosophySection() {
           <LiveWave />
 
           <div className="mt-10 grid gap-10 md:grid-cols-3 md:gap-10">
-            {physiologyNotes.map((note) => (
+            {philosophyContent.notes.map((note) => (
               <div key={note.label} className="max-w-xs">
                 <h3 className="text-sm font-medium text-muted-foreground">{note.label}</h3>
                 <p className="mt-3 text-xl leading-snug text-foreground">{note.title}</p>

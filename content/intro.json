@@ -1,0 +1,17 @@
+{
+  "greeting": "Namaste,",
+  "leadPrefix": "I'm Mahima. I help",
+  "leadSuffix": "find their way back to calm through",
+  "audiences": ["busy minds", "tired bodies", "teams at work", "new parents", "anyone who can't switch off"],
+  "practices": [
+    { "word": "singing bowls", "color": "#b5651d" },
+    { "word": "gongs", "color": "#8a5a44" },
+    { "word": "breathwork", "color": "#5f7f63" },
+    { "word": "silence", "color": "#4b5a7a" }
+  ],
+  "tagline": "I listen first, then let the sound do the rest.",
+  "buttons": [
+    { "label": "See sessions →", "href": "#products" },
+    { "label": "Strike a bowl", "href": "/play" }
+  ]
+}

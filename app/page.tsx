@@ -8,11 +8,11 @@ import { GallerySection } from "@/components/sections/gallery-section";
 import { CollectionSection } from "@/components/sections/collection-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { FooterSection } from "@/components/sections/footer-section";
+import { siteContent } from "@/lib/cms";
 
 export const metadata = {
-  title: "Sound Healing & Breathwork in Delhi NCR",
-  description:
-    "Premium sound healing, breathwork, and meditative journeys in Delhi-NCR. Private sessions, group sound baths, and corporate wellness experiences.",
+  title: siteContent.seo.title,
+  description: siteContent.seo.description,
   alternates: {
     canonical: "/",
   },
